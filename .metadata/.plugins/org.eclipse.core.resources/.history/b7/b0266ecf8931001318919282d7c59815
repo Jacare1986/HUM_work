@@ -1,0 +1,36 @@
+package csvreader;
+
+import java.io.*;
+import java.util.*;
+
+public class CSV_Reader {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try{
+			
+			FileReader f= new FileReader("C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Java\\Access_Times.csv");
+			BufferedReader br = new BufferedReader(f);
+			String line;
+			String[] fields;
+			
+			ArrayList Passes = new ArrayList();
+			
+			//We read the first line which only contains format information
+			br.readLine();
+			
+			//Read the rest of the file
+			while((line=br.readLine())!=null){
+				//now we get all the different fields in each line
+				fields=line.split(",");
+				
+				Passes.add(fields);
+				System.out.println(line);		
+			}
+			br.close();
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+}

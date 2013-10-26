@@ -2,47 +2,47 @@ package Passes;
 
 public class CommunicationPass {
 
-	private String Pass_number;
-	private String Start_time;
-	private String Stop_time;
-	private String Duration;
+	private String pass_number;
+	private String start_time;
+	private String stop_time;
+	private String duration;
 	
-	public CommunicationPass(String Pass_number, String Start_time, String Stop_time, String Duration){
-		setPassNumber(Pass_number);
-		setStartTime(Start_time);
-		setStopTime(Stop_time);
-		setDuration(Duration);	
+	public CommunicationPass(String pass_number, String start_time, String stop_time, String duration){
+		setPassNumber(pass_number);
+		setStartTime(start_time);
+		setStopTime(stop_time);
+		setDuration(duration);	
 	}
 	
 	//Pass Number
 	public String getPassNumber(){
-		return Pass_number;
+		return pass_number;
 	}
-	public void setPassNumber(String Pass_number){
-		this.Pass_number=Pass_number;
+	public void setPassNumber(String pass_number){
+		this.pass_number=pass_number;
 	}
 	
 	//Start Time
 	public String getStartTime(){
-		return Start_time;
+		return start_time;
 	}
-	public void setStartTime(String Start_time){
-		this.Start_time=Start_time;
+	public void setStartTime(String start_time){
+		this.start_time=start_time;
 	}
 	
 	//Stop Time
 	public String getStopTime(){
-		return Stop_time;
+		return stop_time;
 	}
-	public void setStopTime(String Stop_time){
-		this.Stop_time=Stop_time;
+	public void setStopTime(String stop_time){
+		this.stop_time=stop_time;
 	}
 	
 	//Duration
 	public String getDuration(){
-		return Duration;
+		return duration;
 	}
-	public void setDuration(String Duration){
-		this.Duration=Duration;
+	public void setDuration(String duration){
+		this.duration=duration;
 	}
 }

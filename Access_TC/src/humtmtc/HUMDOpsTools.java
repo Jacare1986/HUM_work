@@ -54,19 +54,31 @@ public class HUMDOpsTools {
      * @param passObject, object containing all the information about the communication pass to be scheduled.
      * @return schTc, TMTC object of the SC_RQ_ADDABS request.
 	 * @throws ParseException 
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
      */
 	
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) throws ParseException, ClassNotFoundException{
 
 		pases= CSVReader.getpasses();
-		//CSVReader.getpasses();
+		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
+		String file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Salida\\";
+		String file_name="TC_List.ser";
+		
 		
 		try {
-			HUMDOpsTools.createSchCommPassTC(pases.get(0)); //Here we need to read all pases.
+			//Añadir TC_sumarized al principio y al final del TC_List
+			for(int i=0;i<pases.size();i++){
+				TC_List.add(HUMDOpsTools.createSchCommPassTC(pases.get(i))); //Here we need to read all passes.			
+			}
+			writeSequenceTofile(TC_List, file_path,file_name);
 		} catch (UnknownTCCodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnknownException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -83,15 +95,18 @@ public class HUMDOpsTools {
         long epoch=0;
         long offset=0;
         
+        
         // end of TODO        
        
         //Obtain groundTime and epoch since UNIX in ms
         SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS");
         Date date_st = sdf.parse(passObject.getStartTime()); 
         SimpleDateFormat sdf_2  = new SimpleDateFormat("dd MM yyyy HH:mm:ss.SSS");
+        
         /**I created this new pattern because I had problems only parsing January (01 Jan 2012). 
         Other months worked fine :S
         */
+        
         Date date_epoch = sdf_2.parse("01 01 2012 00:00:00.000");
         
         groundTime=date_st.getTime();
@@ -105,7 +120,7 @@ public class HUMDOpsTools {
         long duration=0;
         // end of TODO  
         
-        duration =(long)Float.parseFloat(passObject.getDuration());
+        duration =(int)Float.parseFloat(passObject.getDuration());
         
         NumericField durationNF = new NumericField(NumericField.UINT16);
         durationNF.setIntValue(duration);
@@ -113,8 +128,11 @@ public class HUMDOpsTools {
         // OP_RQ_TOCOMM TC datatype to be injected in the Add Telecommand TC 
         TMTC commTC = TMTCSet.createTC(TMTCInterface.TC_CHANGE_TO_COMMUNICATION_MODE_ID);
         //ArrayList commKeys = commTC.getParamsKeys();
-        HashMap commParams = new HashMap();
+        HashMap commParams = new HashMap<>();
         commParams.put(TCChangeToCommunicationMode.COMMUNICATIONS_TIME, durationNF);
+        ArrayList commKeys = commTC.getParamsKeys();
+        System.out.println("Claves usadas :" +commKeys);
+        System.out.println("Params:"+commParams.keySet());
         commTC.setParams(commParams);
         
         TcScheduler tc= new TcScheduler();

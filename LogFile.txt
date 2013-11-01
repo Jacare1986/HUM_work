@@ -1,0 +1,36 @@
+1,24 Nov 2013 12:02:49.781,24 Nov 2013 12:11:50.398,540.617
+2,24 Nov 2013 13:38:19.232,24 Nov 2013 13:48:00.055,580.822
+3,24 Nov 2013 22:56:02.461,24 Nov 2013 23:04:21.267,498.806
+4,25 Nov 2013 00:30:37.012,25 Nov 2013 00:40:43.188,606.176
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 29. 
+
+Claves usadas :[Communications Time (seconds)]
+Params:[Communications Time (seconds)]
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 62. 
+
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 29. 
+
+Claves usadas :[Communications Time (seconds)]
+Params:[Communications Time (seconds)]
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 62. 
+
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 29. 
+
+Claves usadas :[Communications Time (seconds)]
+Params:[Communications Time (seconds)]
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 62. 
+
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 29. 
+
+Claves usadas :[Communications Time (seconds)]
+Params:[Communications Time (seconds)]
+oct 31, 2013 11:29:10 AM com.xatcobeo.gssw.tmtc.TMTCSet createTC
+Información: Creating TC with SDU ID: 62. 
+

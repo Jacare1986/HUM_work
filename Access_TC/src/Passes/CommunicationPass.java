@@ -6,6 +6,8 @@ public class CommunicationPass {
 	private String start_time;
 	private String stop_time;
 	private String duration;
+	private int case_type=0; //Define which kind of lightning case we have.
+	private float pass_light_duration=0;
 	
 	public CommunicationPass(String pass_number, String start_time, String stop_time, String duration){
 		setPassNumber(pass_number);
@@ -44,5 +46,21 @@ public class CommunicationPass {
 	}
 	public void setDuration(String duration){
 		this.duration=duration;
+	}
+	
+	//Case Type
+	public void setCaseType(int case_type){
+		this.case_type=case_type;
+	}
+	public int getCaseType(){
+		return case_type;
+	}
+	
+	//Pass Light Duration
+	public void setPassLightDuration(float pass_light_duration){
+		this.pass_light_duration=pass_light_duration;
+	}
+	public float getPassLightDuration(){
+		return pass_light_duration;
 	}
 }

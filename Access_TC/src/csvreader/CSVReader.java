@@ -1,6 +1,8 @@
 package csvreader;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import Passes.*;
@@ -8,16 +10,15 @@ import Passes.*;
 
 public class CSVReader {
 
-	public static ArrayList<CommunicationPass> getpasses(){
+	public static ArrayList<CommunicationPass> getpasses(String path){
 		
-		ArrayList<CommunicationPass> passes_list = new ArrayList<CommunicationPass>();
+		ArrayList<CommunicationPass> passes_list = new ArrayList<CommunicationPass>();	
+		String line;
+		String[] fields;
 		
-		try{		
-			FileReader f= new FileReader("C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Access_Times.csv");
+		try{				
+			FileReader f= new FileReader(path);
 			BufferedReader br = new BufferedReader(f);
-			String line;
-			String[] fields;
-						
 			//We read the first line which only contains format information
 			br.readLine();
 			
@@ -29,7 +30,7 @@ public class CSVReader {
 				 * Then, it reaches an null correctly.
 				 */
 				
-				//now we get all the different fields separated by commas in each line
+				//Obtain different fields from the line read to build a CommunicationPass
 				if(line.length()>=4){
 					
 					fields=line.split(",");
@@ -40,6 +41,7 @@ public class CSVReader {
 					String stop_time=fields[2];
 					String duration=fields[3];
 					
+					//we build a new CommunicationPass and we add it to a list o pases.
 					passes_list.add(new CommunicationPass(pass_number, start_time,stop_time, duration));
 					System.out.println(line);
 				}
@@ -50,6 +52,80 @@ public class CSVReader {
 			System.out.println(e.getMessage());
 		}
 		return passes_list;
+	}
+	
+	public static void PassesType(ArrayList<CommunicationPass> pases, String path) throws IOException, ParseException{
+		
+		/**
+		 * We compare passes with lightning times
+		 * Then we assign to each pass a case type depending on lightning times
+		 */
+		FileReader f= new FileReader(path);
+		BufferedReader br = new BufferedReader(f);
+		String line;
+		String[] fields;
+		SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
+		Date light_start,light_stop;
+		int it=0;
+		
+		//We read the first line which only contains format information
+		br.readLine();
+		
+		while(((line=br.readLine())!=null)&(it<pases.size())){
+
+			if(line.length()>=4){
+				
+				fields=line.split(",");
+		
+				light_start=sdf.parse(fields[0]);
+				light_stop=sdf.parse(fields[1]);
+				String light_duration=fields[2];
+				
+				Date pass_start = sdf.parse((pases.get(it)).getStartTime());
+				Date pass_stop = sdf.parse ((pases.get(it)).getStopTime());
+				
+				/**
+				 * we check in which case we are
+				 */
+				
+				if(pass_start.after(light_start)==true){
+					if(pass_start.before(light_stop)==true){
+						//Start_Time with light
+						if(pass_stop.before(light_stop)==true){
+							//pass within light --> case 1
+							(pases.get(it)).setCaseType(1);
+							//update new pass to compare
+							System.out.println("Pass number :"+it+" is case 1");
+							it++;
+							
+						}else{
+							//part of the pass is within light and the other in eclipse
+							//--> case 3
+							(pases.get(it)).setCaseType(3);
+							//update new pass to compare
+							System.out.println("Pass number :"+it+" is case 3");
+							it++;
+						}
+					}else{
+						//do nothing, compare same pass with next lightning time
+					}
+				}else{
+					//pass_start in eclipse
+					if(pass_stop.before(light_start)==true){
+						//Eclipse pass --> case 2
+						(pases.get(it)).setCaseType(2);
+						System.out.println("Pass number :"+it+" is case 2");
+						it++;
+					}else if(pass_stop.before(light_stop)==true){
+						//Pas start in eclipse and end with light
+						(pases.get(it)).setCaseType(4);
+						System.out.println("Pass number :"+it+" is case 4");
+						it++;
+					}
+				}
+			}
+		}		
+		
 	}
 
 }

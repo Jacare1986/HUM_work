@@ -26,15 +26,20 @@ import com.xatcobeo.gssw.tmtc.interfaces.TMTCInterface;
 import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCChangeToCommunicationMode;
 import com.xatcobeo.gssw.tmtc.services.OBOpsSchedulingService.TC.TCAddTelecommandAbsoluteTime;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -48,6 +53,10 @@ import Passes.*;
 public class HUMDOpsTools {
 
     private static ArrayList<CommunicationPass> pases= new ArrayList <CommunicationPass>();	
+    private static String M1;
+	private static String M2;
+	private static String case_type;
+    
 
 	/**
      * Builds a SC_RQ_ADDABS request containing a OP_RQ_TOCOMM request (TMTC).
@@ -58,20 +67,41 @@ public class HUMDOpsTools {
 	 * @throws ClassNotFoundException 
      */
 	
-	public static void main(String[] args) throws ParseException, ClassNotFoundException{
+	public static void main(String[] args) throws ParseException, ClassNotFoundException, IOException{
 
-		pases= CSVReader.getpasses();
-		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
-		String file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Salida\\";
-		String file_name="TC_List.ser";
+		//Files paths
+		String Access_Times_path= "C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Access_Times.csv";
+		String Lightning_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Lightning.csv";
+		String Output_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Salida\\";
+		String Output_file_name="TC_List.ser";
 		
+		InputStreamReader isr = new InputStreamReader(System.in);
+		BufferedReader br_kb = new BufferedReader (isr); //bufferedReader keyboard		
+		
+		//Telecomand List
+		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
 		
 		try {
-			//Añadir TC_sumarized al principio y al final del TC_List
-			for(int i=0;i<pases.size();i++){
-				TC_List.add(HUMDOpsTools.createSchCommPassTC(pases.get(i))); //Here we need to read all passes.			
+			//First --> Obtain pases from Acces_Times report
+			pases= CSVReader.getpasses(Access_Times_path);		
+			Iterator<CommunicationPass> iter=pases.iterator();//Creates the iterator of passes
+			
+			//Second --> Classify each pass in cases depending on light conditions	
+			CSVReader.PassesType(pases, Lightning_file_path);
+			
+			
+			//Third --> Create a TC_List
+		    /**
+		     * We create a list of TC. The first and last position has a TC_sumarized.
+		     */
+			
+		    TC_List.add(createSchSummarizedTC());
+			while (iter.hasNext()){//We go over the pases list with its iterator
+				TC_List.add(HUMDOpsTools.createSchCommPassTC(iter.next())); 
 			}
-			writeSequenceTofile(TC_List, file_path,file_name);
+			TC_List.add(createSchSummarizedTC());
+			//we write this TC_List in a file.
+			writeSequenceTofile(TC_List,Output_file_path,Output_file_name);
 		} catch (UnknownTCCodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,6 +115,7 @@ public class HUMDOpsTools {
 		
 		
 	}
+	
     public static TMTC createSchCommPassTC(CommunicationPass passObject) throws UnknownTCCodeException, UnknownException, ParseException {
         
         // Start time of the COMMS task
@@ -99,15 +130,10 @@ public class HUMDOpsTools {
         // end of TODO        
        
         //Obtain groundTime and epoch since UNIX in ms
-        SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS");
+        SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
         Date date_st = sdf.parse(passObject.getStartTime()); 
-        SimpleDateFormat sdf_2  = new SimpleDateFormat("dd MM yyyy HH:mm:ss.SSS");
-        
-        /**I created this new pattern because I had problems only parsing January (01 Jan 2012). 
-        Other months worked fine :S
-        */
-        
-        Date date_epoch = sdf_2.parse("01 01 2012 00:00:00.000");
+          
+        Date date_epoch = sdf.parse("01 Jan 2012 00:00:00.000");
         
         groundTime=date_st.getTime();
         epoch=date_epoch.getTime();
@@ -127,12 +153,9 @@ public class HUMDOpsTools {
         
         // OP_RQ_TOCOMM TC datatype to be injected in the Add Telecommand TC 
         TMTC commTC = TMTCSet.createTC(TMTCInterface.TC_CHANGE_TO_COMMUNICATION_MODE_ID);
-        //ArrayList commKeys = commTC.getParamsKeys();
         HashMap commParams = new HashMap<>();
         commParams.put(TCChangeToCommunicationMode.COMMUNICATIONS_TIME, durationNF);
-        ArrayList commKeys = commTC.getParamsKeys();
-        System.out.println("Claves usadas :" +commKeys);
-        System.out.println("Params:"+commParams.keySet());
+        //ArrayList commKeys = commTC.getParamsKeys();
         commTC.setParams(commParams);
         
         TcScheduler tc= new TcScheduler();
@@ -153,7 +176,7 @@ public class HUMDOpsTools {
      * Builds a SC_RQ_SUMMARIZED request (TMTC).
      * @return tc, TMTC object of the SC_RQ_SUMMARIZED request.
      */
-    public static TMTC createSchSummarizedTC(Object schObject) throws UnknownTCCodeException, UnknownException {
+    public static TMTC createSchSummarizedTC() throws UnknownTCCodeException, UnknownException {
         TMTC tc = TMTCSet.createTC(TMTCInterface.TC_REPORT_COMMAND_SCHEDULE_IN_SUMMARY_FORM_ID);
         return (tc);
     }
@@ -197,4 +220,5 @@ public class HUMDOpsTools {
         return (sequence);
     }
 }
+
 

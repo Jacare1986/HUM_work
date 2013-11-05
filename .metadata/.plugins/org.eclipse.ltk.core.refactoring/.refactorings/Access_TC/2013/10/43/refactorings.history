@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Convert local variable &apos;humtmtc.HUMDOpsTools.main().Pase&apos; in &apos;humtmtc.HUMDOpsTools.main()&apos; to field&#x0D;&#x0A;- Original project: &apos;Access_TC&apos;&#x0D;&#x0A;- Original element: &apos;humtmtc.HUMDOpsTools.main().Pase&apos;&#x0D;&#x0A;- Field name: &apos;pase&apos;&#x0D;&#x0A;- Initialize field in method&#x0D;&#x0A;- Declared visibility: &apos;private&apos;&#x0D;&#x0A;- Declare field &apos;static&apos;" description="Convert local variable &apos;Pase&apos; to field" final="false" flags="2" id="org.eclipse.jdt.ui.promote.temp" initialize="1" input="/src&lt;humtmtc{HUMDOpsTools.java" name="pase" selection="2227 42" stamp="1382526121994" static="true" version="1.0" visibility="2"/>
+</session>

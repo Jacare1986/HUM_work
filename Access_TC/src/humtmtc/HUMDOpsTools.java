@@ -146,7 +146,7 @@ public class HUMDOpsTools {
         long duration=0;
         // end of TODO  
         
-        duration =(int)Float.parseFloat(passObject.getDuration());
+        duration =(long) Float.parseFloat(passObject.getDuration());
         
         NumericField durationNF = new NumericField(NumericField.UINT16);
         durationNF.setIntValue(duration);

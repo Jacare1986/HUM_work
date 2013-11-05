@@ -79,7 +79,6 @@ public class CSVReader {
 		
 				light_start=sdf.parse(fields[0]);
 				light_stop=sdf.parse(fields[1]);
-				String light_duration=fields[2];
 				
 				Date pass_start = sdf.parse((pases.get(it)).getStartTime());
 				Date pass_stop = sdf.parse ((pases.get(it)).getStopTime());
@@ -94,16 +93,17 @@ public class CSVReader {
 						if(pass_stop.before(light_stop)==true){
 							//pass within light --> case 1
 							(pases.get(it)).setCaseType(1);
+							Float light_pass_duration=Float.parseFloat((pases.get(it).getDuration()));
+							(pases.get(it)).setPassLightDuration(light_pass_duration);
 							//update new pass to compare
-							System.out.println("Pass number :"+it+" is case 1");
-							it++;
-							
+							it++;		
 						}else{
 							//part of the pass is within light and the other in eclipse
 							//--> case 3
 							(pases.get(it)).setCaseType(3);
+							float light_pass_duration=(float)((light_stop.getTime())-(pass_start.getTime()))/1000;
+							(pases.get(it)).setPassLightDuration(light_pass_duration);
 							//update new pass to compare
-							System.out.println("Pass number :"+it+" is case 3");
 							it++;
 						}
 					}else{
@@ -114,18 +114,19 @@ public class CSVReader {
 					if(pass_stop.before(light_start)==true){
 						//Eclipse pass --> case 2
 						(pases.get(it)).setCaseType(2);
-						System.out.println("Pass number :"+it+" is case 2");
+						(pases.get(it)).setPassLightDuration(0);
 						it++;
 					}else if(pass_stop.before(light_stop)==true){
 						//Pas start in eclipse and end with light
 						(pases.get(it)).setCaseType(4);
-						System.out.println("Pass number :"+it+" is case 4");
+						float light_pass_duration=(float)((pass_stop.getTime())-(light_start.getTime()))/1000;
+						(pases.get(it)).setPassLightDuration(light_pass_duration);
 						it++;
 					}
 				}
 			}
-		}		
-		
+		}
+		br.close();
 	}
 
 }

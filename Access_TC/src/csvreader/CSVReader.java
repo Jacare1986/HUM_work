@@ -5,13 +5,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import Passes.*;
+import passes.*;
 
 
 public class CSVReader {
 
-	public static ArrayList<CommunicationPass> getpasses(String path){
+	public static ArrayList<CommunicationPass> getpasses(int M1, int M2,String path) throws ParseException{
 		
+		SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
+		Date start_time,stop_time;
 		ArrayList<CommunicationPass> passes_list = new ArrayList<CommunicationPass>();	
 		String line;
 		String[] fields;
@@ -36,14 +38,19 @@ public class CSVReader {
 					fields=line.split(",");
 					
 					//Obtain size of fields. If it is 4, we are right.
+					
 					String pass_number=fields[0];
-					String start_time=fields[1];
-					String stop_time=fields[2];
-					String duration=fields[3];
+					//We substract M1 to Start_Time
+					start_time=sdf.parse(fields[1]);
+					long fecha=start_time.getTime()-(M1*1000);
+					start_time.setTime(fecha);
+					stop_time=sdf.parse(fields[2]);
+					//we add margin M2 to Duration
+					float duration = (Float.parseFloat(fields[3])+M2);
 					
 					//we build a new CommunicationPass and we add it to a list o pases.
 					passes_list.add(new CommunicationPass(pass_number, start_time,stop_time, duration));
-					System.out.println(line);
+					//System.out.println(line);
 				}
 				
 			}
@@ -80,8 +87,10 @@ public class CSVReader {
 				light_start=sdf.parse(fields[0]);
 				light_stop=sdf.parse(fields[1]);
 				
-				Date pass_start = sdf.parse((pases.get(it)).getStartTime());
-				Date pass_stop = sdf.parse ((pases.get(it)).getStopTime());
+				//Read Pass Start & Pass Stop
+				Date pass_start = (pases.get(it)).getStartTime();
+				System.out.println(pass_start);
+				Date pass_stop = (pases.get(it)).getStopTime();
 				
 				/**
 				 * we check in which case we are
@@ -93,7 +102,8 @@ public class CSVReader {
 						if(pass_stop.before(light_stop)==true){
 							//pass within light --> case 1
 							(pases.get(it)).setCaseType(1);
-							Float light_pass_duration=Float.parseFloat((pases.get(it).getDuration()));
+							//Light Duration during pass
+							float light_pass_duration=(pases.get(it).getDuration());
 							(pases.get(it)).setPassLightDuration(light_pass_duration);
 							//update new pass to compare
 							it++;		
@@ -101,7 +111,8 @@ public class CSVReader {
 							//part of the pass is within light and the other in eclipse
 							//--> case 3
 							(pases.get(it)).setCaseType(3);
-							float light_pass_duration=(float)((light_stop.getTime())-(pass_start.getTime()))/1000;
+							//Light Duration during pass
+							float light_pass_duration=(float)((light_stop.getTime())-(pass_start.getTime()))/1000; //getTime() returns time since UNIX in ms so we divide by 1000 to obtain in sec.
 							(pases.get(it)).setPassLightDuration(light_pass_duration);
 							//update new pass to compare
 							it++;

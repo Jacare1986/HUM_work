@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -43,8 +42,9 @@ import java.util.Locale;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import passes.*;
 import csvreader.*;
-import Passes.*;
+
 /**
  *
  * @author Alberto Gonzalez (alberto.gonzalez (at) humsat.org)
@@ -67,41 +67,54 @@ public class HUMDOpsTools {
 	 * @throws ClassNotFoundException 
      */
 	
-	public static void main(String[] args) throws ParseException, ClassNotFoundException, IOException{
+	public static void TCListCreator(int M1, int M2,int pass_case,String AccessTimesPath, String LightningPath, String TCList_path, String Output_file_name) throws ParseException, ClassNotFoundException, IOException{
 
 		//Files paths
-		String Access_Times_path= "C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Access_Times.csv";
-		String Lightning_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Lightning.csv";
-		String Output_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Salida\\";
-		String Output_file_name="TC_List.ser";
-		
-		InputStreamReader isr = new InputStreamReader(System.in);
-		BufferedReader br_kb = new BufferedReader (isr); //bufferedReader keyboard		
+		//String Access_Times_path= "C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Access_Times.csv";
+		//String Lightning_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Lightning.csv";
+		//String Output_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Salida\\";
+		//String Output_file_name="TC_List.ser";		
 		
 		//Telecomand List
 		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
 		
 		try {
-			//First --> Obtain pases from Acces_Times report
-			pases= CSVReader.getpasses(Access_Times_path);		
-			Iterator<CommunicationPass> iter=pases.iterator();//Creates the iterator of passes
+			//First --> Obtain passes from Acces_Times report
+			pases= CSVReader.getpasses(M1, M2,AccessTimesPath);		
+			//Iterator<CommunicationPass> iter=pases.iterator();//Creates the iterator of passes
 			
 			//Second --> Classify each pass in cases depending on light conditions	
-			CSVReader.PassesType(pases, Lightning_file_path);
+			CSVReader.PassesType(pases, LightningPath);
 			
-			
+			System.out.println("Duracion luz pase 1 "+pases.get(0).getPassLightDuration());
+			System.out.println("Duracion luz pase 2 "+pases.get(1).getPassLightDuration());
+			System.out.println("Duracion luz pase 3 "+pases.get(2).getPassLightDuration());
+			System.out.println("Duracion luz pase 4 "+pases.get(3).getPassLightDuration());
+			System.out.println("Duracion luz pase 5 "+pases.get(4).getPassLightDuration());
+			System.out.println("Duracion luz pase 6 "+pases.get(5).getPassLightDuration());
+ 
 			//Third --> Create a TC_List
 		    /**
 		     * We create a list of TC. The first and last position has a TC_sumarized.
 		     */
-			
-		    TC_List.add(createSchSummarizedTC());
+			int it=0;
+		    /*
 			while (iter.hasNext()){//We go over the pases list with its iterator
-				TC_List.add(HUMDOpsTools.createSchCommPassTC(iter.next())); 
-			}
+				    System.out.println(iter.next().getDuration());
+					TC_List.add(HUMDOpsTools.createSchCommPassTC(iter.next()));
+					ca++;
+				
+			}*/
+		    TC_List.add(createSchSummarizedTC());
+		    for(it=0;it<pases.size();it++){
+		    	if(pases.get(it).getCaseType()==pass_case){
+		    		TC_List.add(HUMDOpsTools.createSchCommPassTC(pases.get(it)));
+			    	System.out.println("Pase numero " +it+ " "+pases.get(it).getDuration());
+		    	}	
+		    }
 			TC_List.add(createSchSummarizedTC());
 			//we write this TC_List in a file.
-			writeSequenceTofile(TC_List,Output_file_path,Output_file_name);
+			writeSequenceTofile(TC_List,TCList_path,Output_file_name);
 		} catch (UnknownTCCodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -116,7 +129,8 @@ public class HUMDOpsTools {
 		
 	}
 	
-    public static TMTC createSchCommPassTC(CommunicationPass passObject) throws UnknownTCCodeException, UnknownException, ParseException {
+
+	public static TMTC createSchCommPassTC(CommunicationPass passObject) throws UnknownTCCodeException, UnknownException, ParseException {
         
         // Start time of the COMMS task
         TimeStamp time = new TimeStamp();        
@@ -130,12 +144,10 @@ public class HUMDOpsTools {
         // end of TODO        
        
         //Obtain groundTime and epoch since UNIX in ms
-        SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
-        Date date_st = sdf.parse(passObject.getStartTime()); 
-          
+        SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);          
         Date date_epoch = sdf.parse("01 Jan 2012 00:00:00.000");
         
-        groundTime=date_st.getTime();
+        groundTime=(passObject.getStartTime()).getTime();
         epoch=date_epoch.getTime();
         M=100;
         
@@ -146,7 +158,7 @@ public class HUMDOpsTools {
         long duration=0;
         // end of TODO  
         
-        duration =(long) Float.parseFloat(passObject.getDuration());
+        duration =(long)(passObject.getDuration());
         
         NumericField durationNF = new NumericField(NumericField.UINT16);
         durationNF.setIntValue(duration);
@@ -189,8 +201,8 @@ public class HUMDOpsTools {
      */
     public static void writeSequenceTofile(ArrayList<TMTC> sequence, String path, String filename) throws IOException, ClassNotFoundException {
 
-        File folder = new File(path);
-        folder.mkdirs();
+       // File folder = new File(path);
+        //folder.mkdirs();
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path + filename, false))) {
             os.writeObject(sequence);
         } catch (Exception e) {
@@ -219,6 +231,7 @@ public class HUMDOpsTools {
 
         return (sequence);
     }
+
 }
 
 

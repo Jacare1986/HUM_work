@@ -1,21 +1,24 @@
-package Passes;
+package passes;
+
+import java.util.Date;
 
 public class CommunicationPass {
 
 	private String pass_number;
-	private String start_time;
-	private String stop_time;
-	private String duration;
+	private Date start_time;
+	private Date stop_time;
+	private float duration;
 	private int case_type=0; //Define which kind of lightning case we have.
 	private float pass_light_duration=0;
 	
-	public CommunicationPass(String pass_number, String start_time, String stop_time, String duration){
+	public CommunicationPass(String pass_number, Date start_time, Date stop_time, float duration){
 		setPassNumber(pass_number);
 		setStartTime(start_time);
 		setStopTime(stop_time);
 		setDuration(duration);	
 	}
-	
+
+
 	//Pass Number
 	public String getPassNumber(){
 		return pass_number;
@@ -25,26 +28,26 @@ public class CommunicationPass {
 	}
 	
 	//Start Time
-	public String getStartTime(){
+	public Date getStartTime(){
 		return start_time;
 	}
-	public void setStartTime(String start_time){
+	public void setStartTime(Date start_time){
 		this.start_time=start_time;
 	}
 	
 	//Stop Time
-	public String getStopTime(){
+	public Date getStopTime(){
 		return stop_time;
 	}
-	public void setStopTime(String stop_time){
+	public void setStopTime(Date stop_time){
 		this.stop_time=stop_time;
 	}
 	
 	//Duration
-	public String getDuration(){
+	public float getDuration(){
 		return duration;
 	}
-	public void setDuration(String duration){
+	public void setDuration(float duration){
 		this.duration=duration;
 	}
 	

@@ -67,7 +67,7 @@ public class HUMDOpsTools {
 	 * @throws ClassNotFoundException 
      */
 	
-	public static void TCListCreator(int M1, int M2,int pass_case,String AccessTimesPath, String LightningPath, String TCList_path, String Output_file_name) throws ParseException, ClassNotFoundException, IOException{
+	public static void TCListCreator(int M1, int M2,int case_type1,int case_type2,int case_type3,int case_type4,String AccessTimesPath, String LightningPath, String TCList_path, String Output_file_name) throws ParseException, ClassNotFoundException, IOException{
 
 		//Files paths
 		//String Access_Times_path= "C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Access_Times.csv";
@@ -107,7 +107,7 @@ public class HUMDOpsTools {
 			}*/
 		    TC_List.add(createSchSummarizedTC());
 		    for(it=0;it<pases.size();it++){
-		    	if(pases.get(it).getCaseType()==pass_case){
+		    	if((pases.get(it).getCaseType()==case_type1)||(pases.get(it).getCaseType()==case_type2)||(pases.get(it).getCaseType()==case_type3)||(pases.get(it).getCaseType()==case_type4)){
 		    		TC_List.add(HUMDOpsTools.createSchCommPassTC(pases.get(it)));
 			    	System.out.println("Pase numero " +it+ " "+pases.get(it).getDuration());
 		    	}	

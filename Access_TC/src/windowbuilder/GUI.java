@@ -42,13 +42,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.SwingConstants;
+import javax.swing.JCheckBox;
+import javax.swing.JTable;
 
 public class GUI {
 
 	private JFrame frmTclistCreator;
 	private JTextField M1Field;
 	private JTextField M2Field;
-	private JComboBox comboBox; //We need to make comboBox global in order to get its field anytime.
 	private JTextField accesTimesField;
 	private JTextField lightningField;
 	private JFileChooser chooser = new JFileChooser();
@@ -56,6 +57,11 @@ public class GUI {
 	String LightningPath;
 	String TCList_path;
 	String Output_file_name;
+	private JCheckBox case1checkbox;
+	private JCheckBox case2checkbox;
+	private JCheckBox case3checkbox;
+	private JCheckBox case4checkbox;
+	int case_type1, case_type2,case_type3,case_type4;
 	
 	/**
 	 * Launch the application.
@@ -87,11 +93,11 @@ public class GUI {
 		frmTclistCreator = new JFrame();
 		frmTclistCreator.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("/javax/swing/plaf/basic/icons/JavaCup16.png")));
 		frmTclistCreator.setTitle("TC_List Creator");
-		frmTclistCreator.setBounds(100, 100, 450, 300);
+		frmTclistCreator.setBounds(100, 100, 547, 415);
 		frmTclistCreator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JButton btnNewButton = new JButton("Generate");
-		btnNewButton.setBounds(179, 212, 86, 23);
+		btnNewButton.setBounds(238, 342, 86, 23);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//When we press generate, we create the TCList				
@@ -112,15 +118,27 @@ public class GUI {
 					//We obtain the parameters selected in the window
 					int M1 = Integer.parseInt(M1Field.getText());
 					int M2 = Integer.parseInt(M2Field.getText());				
-					int pass_case = Integer.parseInt((comboBox.getSelectedItem()).toString());//getSelectedItem returns an Object
+										
+					if(case1checkbox.isSelected()==true){
+						case_type1=1;
+					}
+					if(case2checkbox.isSelected()==true){
+						case_type2=2;
+					}
+					if(case3checkbox.isSelected()==true){
+						case_type3=3;
+					}
+					if(case4checkbox.isSelected()==true){
+						case_type4=4;
+					}			
 					
-					System.out.println("Pass Type to program: "+pass_case);
+					System.out.println("Pass Type to program: 1 "+case1checkbox.isSelected()+ " 2 "+case2checkbox.isSelected()+" 3 "+case3checkbox.isSelected()+" 4 "+case4checkbox.isSelected());
 					
 					//We read the Paths 
 					AccesTimesPath=accesTimesField.getText();
 					LightningPath=lightningField.getText();
 					
-					HUMDOpsTools.TCListCreator(M1,M2,pass_case,AccesTimesPath,LightningPath,TCList_path, Output_file_name);
+					HUMDOpsTools.TCListCreator(M1,M2,case_type1,case_type2,case_type3,case_type4,AccesTimesPath,LightningPath,TCList_path, Output_file_name);
 					
 				} catch (ClassNotFoundException | ParseException | IOException e) {
 					// TODO Auto-generated catch block
@@ -187,18 +205,13 @@ public class GUI {
 		lblSelectCaseType.setBounds(194, 38, 104, 14);
 		frmTclistCreator.getContentPane().add(lblSelectCaseType);
 		
-		comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4"}));
-		comboBox.setBounds(308, 37, 96, 17);
-		frmTclistCreator.getContentPane().add(comboBox);
-		
 		accesTimesField = new JTextField();
-		accesTimesField.setBounds(300, 103, 86, 20);
+		accesTimesField.setBounds(300, 238, 86, 20);
 		frmTclistCreator.getContentPane().add(accesTimesField);
 		accesTimesField.setColumns(10);
 		
 		lightningField = new JTextField();
-		lightningField.setBounds(300, 154, 86, 20);
+		lightningField.setBounds(300, 293, 86, 20);
 		frmTclistCreator.getContentPane().add(lightningField);
 		lightningField.setColumns(10);
 		
@@ -213,7 +226,7 @@ public class GUI {
 				    }
 			}
 		});
-		btnNewButton_1.setBounds(194, 102, 89, 23);
+		btnNewButton_1.setBounds(194, 237, 89, 23);
 		frmTclistCreator.getContentPane().add(btnNewButton_1);
 		
 		JButton btnOpen = new JButton("Open");
@@ -227,24 +240,40 @@ public class GUI {
 				    }
 			}
 		});
-		btnOpen.setBounds(194, 153, 89, 23);
+		btnOpen.setBounds(194, 292, 89, 23);
 		frmTclistCreator.getContentPane().add(btnOpen);
 		
 		JLabel lblAccesTimeFile = new JLabel("Acces Time File");
-		lblAccesTimeFile.setBounds(194, 87, 89, 14);
+		lblAccesTimeFile.setBounds(194, 212, 89, 14);
 		frmTclistCreator.getContentPane().add(lblAccesTimeFile);
 		
 		JLabel lblLightningTimeFile = new JLabel("Lightning Time File");
-		lblLightningTimeFile.setBounds(194, 136, 89, 14);
+		lblLightningTimeFile.setBounds(194, 274, 89, 14);
 		frmTclistCreator.getContentPane().add(lblLightningTimeFile);
 		
 		JLabel lblPath = new JLabel("Path");
-		lblPath.setBounds(300, 87, 46, 14);
+		lblPath.setBounds(300, 212, 46, 14);
 		frmTclistCreator.getContentPane().add(lblPath);
 		
 		JLabel lblPath_1 = new JLabel("Path");
-		lblPath_1.setBounds(300, 136, 46, 14);
+		lblPath_1.setBounds(300, 268, 46, 14);
 		frmTclistCreator.getContentPane().add(lblPath_1);
+		
+		case1checkbox = new JCheckBox("Case 1");
+		case1checkbox.setBounds(300, 34, 97, 23);
+		frmTclistCreator.getContentPane().add(case1checkbox);
+		
+		case2checkbox = new JCheckBox("Case 2");
+		case2checkbox.setBounds(300, 59, 97, 23);
+		frmTclistCreator.getContentPane().add(case2checkbox);
+		
+		case3checkbox = new JCheckBox("Case 3");
+		case3checkbox.setBounds(300, 85, 97, 23);
+		frmTclistCreator.getContentPane().add(case3checkbox);
+		
+		case4checkbox = new JCheckBox("case 4");
+		case4checkbox.setBounds(300, 111, 97, 23);
+		frmTclistCreator.getContentPane().add(case4checkbox);
 		
 		
 	}

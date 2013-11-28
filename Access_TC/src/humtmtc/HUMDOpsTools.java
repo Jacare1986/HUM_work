@@ -27,13 +27,16 @@ import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCChangeToCommun
 import com.xatcobeo.gssw.tmtc.services.OBOpsSchedulingService.TC.TCAddTelecommandAbsoluteTime;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
@@ -53,10 +56,6 @@ import csvreader.*;
 public class HUMDOpsTools {
 
     private static ArrayList<CommunicationPass> pases= new ArrayList <CommunicationPass>();	
-    private static String M1;
-	private static String M2;
-	private static String case_type;
-    
 
 	/**
      * Builds a SC_RQ_ADDABS request containing a OP_RQ_TOCOMM request (TMTC).
@@ -67,13 +66,7 @@ public class HUMDOpsTools {
 	 * @throws ClassNotFoundException 
      */
 	
-	public static void TCListCreator(int M1, int M2,int case_type1,int case_type2,int case_type3,int case_type4,String AccessTimesPath, String LightningPath, String TCList_path, String Output_file_name) throws ParseException, ClassNotFoundException, IOException{
-
-		//Files paths
-		//String Access_Times_path= "C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Access_Times.csv";
-		//String Lightning_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\STK_Reports\\Lightning.csv";
-		//String Output_file_path="C:\\Users\\Aaron\\Documents\\Universidad\\4º Curso Puente\\Proyecto\\Salida\\";
-		//String Output_file_name="TC_List.ser";		
+	public static void TCListCreator(int M1, int M2,int case_type1,int case_type2,int case_type3,int case_type4,String AccessTimesPath, String LightningPath, String TCList_path, String Output_file_name) throws ParseException, ClassNotFoundException, IOException{	
 		
 		//Telecomand List
 		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
@@ -81,51 +74,36 @@ public class HUMDOpsTools {
 		try {
 			//First --> Obtain passes from Acces_Times report
 			pases= CSVReader.getpasses(M1, M2,AccessTimesPath);		
-			//Iterator<CommunicationPass> iter=pases.iterator();//Creates the iterator of passes
 			
 			//Second --> Classify each pass in cases depending on light conditions	
 			CSVReader.PassesType(pases, LightningPath);
-			
-			System.out.println("Duracion luz pase 1 "+pases.get(0).getPassLightDuration());
-			System.out.println("Duracion luz pase 2 "+pases.get(1).getPassLightDuration());
-			System.out.println("Duracion luz pase 3 "+pases.get(2).getPassLightDuration());
-			System.out.println("Duracion luz pase 4 "+pases.get(3).getPassLightDuration());
-			System.out.println("Duracion luz pase 5 "+pases.get(4).getPassLightDuration());
-			System.out.println("Duracion luz pase 6 "+pases.get(5).getPassLightDuration());
  
 			//Third --> Create a TC_List
 		    /**
 		     * We create a list of TC. The first and last position has a TC_sumarized.
 		     */
 			int it=0;
-		    /*
-			while (iter.hasNext()){//We go over the pases list with its iterator
-				    System.out.println(iter.next().getDuration());
-					TC_List.add(HUMDOpsTools.createSchCommPassTC(iter.next()));
-					ca++;
-				
-			}*/
+			int k=0;
 		    TC_List.add(createSchSummarizedTC());
 		    for(it=0;it<pases.size();it++){
 		    	if((pases.get(it).getCaseType()==case_type1)||(pases.get(it).getCaseType()==case_type2)||(pases.get(it).getCaseType()==case_type3)||(pases.get(it).getCaseType()==case_type4)){
 		    		TC_List.add(HUMDOpsTools.createSchCommPassTC(pases.get(it)));
-			    	System.out.println("Pase numero " +it+ " "+pases.get(it).getDuration());
+			    	System.out.println("Pase numero " +it+ " "+pases.get(it).getPassLightDuration());
+			    	k++;
 		    	}	
 		    }
+		    System.out.println("Total Passes programmed: "+k);
 			TC_List.add(createSchSummarizedTC());
 			//we write this TC_List in a file.
-			writeSequenceTofile(TC_List,TCList_path,Output_file_name);
+			writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));
+			writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"));
 		} catch (UnknownTCCodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnknownException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		} 	
 		
 	}
 	
@@ -158,7 +136,7 @@ public class HUMDOpsTools {
         long duration=0;
         // end of TODO  
         
-        duration =(long)(passObject.getDuration());
+        duration =passObject.getDuration();
         
         NumericField durationNF = new NumericField(NumericField.UINT16);
         durationNF.setIntValue(duration);
@@ -193,6 +171,21 @@ public class HUMDOpsTools {
         return (tc);
     }
     
+    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename)
+    {
+    	try{
+    		File f= new File(path+filename);
+    		FileWriter fw = new FileWriter(f);
+    		int k=0;
+    		for (k=0;k<tclist.size();k++){
+    			fw.write(tclist.get(k).print());
+    		}
+    		fw.close();
+    	}catch (Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    }
     /**
      * Serializes and writes a telecommands sequence to a file.
      * @param sequence, sequence of telecommands.
@@ -203,8 +196,10 @@ public class HUMDOpsTools {
 
        // File folder = new File(path);
         //folder.mkdirs();
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path + filename, false))) {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path + filename, false)))    
+        {
             os.writeObject(sequence);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

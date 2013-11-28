@@ -3,15 +3,10 @@ package windowbuilder;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-
-import java.awt.GridBagLayout;
-
 import javax.swing.JButton;
 
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Insets;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -20,30 +15,14 @@ import javax.swing.JTextField;
 
 import humtmtc.*;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.JTextArea;
-
-import com.jgoodies.forms.factories.DefaultComponentFactory;
 
 import java.awt.Toolkit;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
-import javax.swing.JTable;
+import javax.swing.ImageIcon; 
 
 public class GUI {
 
@@ -61,8 +40,9 @@ public class GUI {
 	private JCheckBox case2checkbox;
 	private JCheckBox case3checkbox;
 	private JCheckBox case4checkbox;
-	int case_type1, case_type2,case_type3,case_type4;
-	
+	int M1,M2;
+	boolean pass_selected= false;
+
 	/**
 	 * Launch the application.
 	 */
@@ -81,6 +61,7 @@ public class GUI {
 
 	/**
 	 * Create the application.
+	 * @throws ParseException 
 	 */
 	public GUI() {
 		initialize();
@@ -96,73 +77,79 @@ public class GUI {
 		frmTclistCreator.setBounds(100, 100, 547, 415);
 		frmTclistCreator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JButton btnNewButton = new JButton("Generate");
-		btnNewButton.setBounds(238, 342, 86, 23);
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton generateButton = new JButton("Generate");
+		generateButton.setBounds(238, 342, 86, 23);
+		generateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//When we press generate, we create the TCList				
-				try {
-					//1st we ask where do you want to save .ser file.
-					JFileChooser chooser1 = new JFileChooser();
-					chooser1.setDialogTitle("Save File");
-					FileNameExtensionFilter filter = new FileNameExtensionFilter(".ser", "ser");
-					chooser1.setFileFilter(filter);
-					if(chooser1.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-						//Get directory path
-						TCList_path=(chooser1.getCurrentDirectory().getPath())+"\\";
-						Output_file_name=(chooser1.getSelectedFile().getName())+".ser";
-						
-						System.out.println(TCList_path);
-						System.out.println(Output_file_name);
-				    }				
-					//We obtain the parameters selected in the window
-					int M1 = Integer.parseInt(M1Field.getText());
-					int M2 = Integer.parseInt(M2Field.getText());				
-										
-					if(case1checkbox.isSelected()==true){
-						case_type1=1;
-					}
-					if(case2checkbox.isSelected()==true){
-						case_type2=2;
-					}
-					if(case3checkbox.isSelected()==true){
-						case_type3=3;
-					}
-					if(case4checkbox.isSelected()==true){
-						case_type4=4;
-					}			
-					
-					System.out.println("Pass Type to program: 1 "+case1checkbox.isSelected()+ " 2 "+case2checkbox.isSelected()+" 3 "+case3checkbox.isSelected()+" 4 "+case4checkbox.isSelected());
-					
-					//We read the Paths 
-					AccesTimesPath=accesTimesField.getText();
-					LightningPath=lightningField.getText();
-					
-					HUMDOpsTools.TCListCreator(M1,M2,case_type1,case_type2,case_type3,case_type4,AccesTimesPath,LightningPath,TCList_path, Output_file_name);
-					
-				} catch (ClassNotFoundException | ParseException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				/*When we press generate, we create the TCList
+				 * 1st we check if we have a case type selected
+				 * 2nd Opend a File Chooser to selecet where to save our .ser file
+				 */
 				
+				try {
+					//1st we ask where do you want to save .ser file.								
+					if((case1checkbox.isSelected()==false)&&(case2checkbox.isSelected()==false)&&(case3checkbox.isSelected()==false)&&(case4checkbox.isSelected()==false)){
+						ErrorWindow ew=new ErrorWindow("¡Error! You must select a case type.");
+						ew.setVisible(true);
+					}else{
+						JFileChooser chooser1 = new JFileChooser();
+						chooser1.setDialogTitle("Save File");
+						FileNameExtensionFilter filter = new FileNameExtensionFilter(".ser", "ser");
+						chooser1.setFileFilter(filter);
+						if(chooser1.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+							//Get directory path
+							TCList_path=(chooser1.getCurrentDirectory().getPath())+"\\";
+							Output_file_name=(chooser1.getSelectedFile().getName());
+													
+							M1 = Integer.parseInt(M1Field.getText());
+							M2 = Integer.parseInt(M2Field.getText());
+							
+							int case_type1=0, case_type2=0,case_type3=0,case_type4=0;
+							
+							if(case1checkbox.isSelected()==true){
+								case_type1=1;
+							}if(case2checkbox.isSelected()==true){
+								case_type2=2;
+							}if(case3checkbox.isSelected()==true){
+								case_type3=3;
+							}if(case4checkbox.isSelected()==true){
+								case_type4=4;
+							};
+																		
+							System.out.println("Pass Type to program: 1 "+case1checkbox.isSelected()+ " 2 "+case2checkbox.isSelected()+" 3 "+case3checkbox.isSelected()+" 4 "+case4checkbox.isSelected());
+							
+							//We read the Paths 
+							AccesTimesPath=accesTimesField.getText();
+							LightningPath=lightningField.getText();
+							
+							HUMDOpsTools.TCListCreator(M1,M2,case_type1,case_type2,case_type3,case_type4,AccesTimesPath,LightningPath,TCList_path, Output_file_name);						
+						}		
+					}
+				}catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+					System.out.println("Error while executing.");
+				}catch (ParseException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+					System.out.println("¡Error! Problem reading .csv files");
+					ErrorWindow ew = new ErrorWindow("¡Error! Problem reading .csv files.");
+					ew.setVisible(true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					ErrorWindow ew = new ErrorWindow("¡Error! Please open .csv Files.");
+					ew.setVisible(true);
+					//e.printStackTrace();
+				}catch (NumberFormatException e){
+					//Window message with error
+					System.out.println("Margins Error. Please, type an integer valid margin in seconds");
+					ErrorWindow ew = new ErrorWindow("¡Error! Please, type an integer valid margin in seconds.");
+					ew.setVisible(true);
+				}
 			}
 		});
 		frmTclistCreator.getContentPane().setLayout(null);
-		frmTclistCreator.getContentPane().add(btnNewButton);
-		
-	/*	JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new java.io.File("."));
-		chooser.setDialogTitle("Titulo");
-		//Elegiremos archivos del directorio
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		chooser.setAcceptAllFileFilterUsed(false);
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			System.out.println("Directorio: " + chooser.getCurrentDirectory());
-			//Si no seleccionamos nada retornaremos No seleccion
-			} else {
-			System.out.println("No seleccion ");
-			}
-		*/
+		frmTclistCreator.getContentPane().add(generateButton);
 	    
 		JLabel lblM = new JLabel("M1");
 		lblM.setBounds(10, 38, 46, 14);
@@ -194,29 +181,23 @@ public class GUI {
 		lblsec.setBounds(138, 63, 46, 14);
 		frmTclistCreator.getContentPane().add(lblsec);
 		
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 434, 21);
-		frmTclistCreator.getContentPane().add(menuBar);
-		
-		JMenu mnFile = new JMenu("File");
-		menuBar.add(mnFile);
-		
 		JLabel lblSelectCaseType = new JLabel("Select Case Type");
 		lblSelectCaseType.setBounds(194, 38, 104, 14);
 		frmTclistCreator.getContentPane().add(lblSelectCaseType);
 		
 		accesTimesField = new JTextField();
-		accesTimesField.setBounds(300, 238, 86, 20);
+		accesTimesField.setBounds(391, 238, 86, 20);
 		frmTclistCreator.getContentPane().add(accesTimesField);
 		accesTimesField.setColumns(10);
 		
 		lightningField = new JTextField();
-		lightningField.setBounds(300, 293, 86, 20);
+		lightningField.setBounds(391, 293, 86, 20);
 		frmTclistCreator.getContentPane().add(lightningField);
 		lightningField.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Open");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton accesButton = new JButton("Open");
+		accesButton.setIcon(new ImageIcon(GUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
+		accesButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				  FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
 				    chooser.setFileFilter(filter);
@@ -226,11 +207,12 @@ public class GUI {
 				    }
 			}
 		});
-		btnNewButton_1.setBounds(194, 237, 89, 23);
-		frmTclistCreator.getContentPane().add(btnNewButton_1);
+		accesButton.setBounds(269, 237, 89, 23);
+		frmTclistCreator.getContentPane().add(accesButton);
 		
-		JButton btnOpen = new JButton("Open");
-		btnOpen.addActionListener(new ActionListener() {
+		JButton lightningButton = new JButton("Open");
+		lightningButton.setIcon(new ImageIcon(GUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
+		lightningButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				  FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
 				    chooser.setFileFilter(filter);
@@ -240,23 +222,24 @@ public class GUI {
 				    }
 			}
 		});
-		btnOpen.setBounds(194, 292, 89, 23);
-		frmTclistCreator.getContentPane().add(btnOpen);
+		lightningButton.setBounds(269, 292, 89, 23);
+		frmTclistCreator.getContentPane().add(lightningButton);
 		
 		JLabel lblAccesTimeFile = new JLabel("Acces Time File");
-		lblAccesTimeFile.setBounds(194, 212, 89, 14);
+		lblAccesTimeFile.setIcon(null);
+		lblAccesTimeFile.setBounds(258, 212, 89, 14);
 		frmTclistCreator.getContentPane().add(lblAccesTimeFile);
 		
 		JLabel lblLightningTimeFile = new JLabel("Lightning Time File");
-		lblLightningTimeFile.setBounds(194, 274, 89, 14);
+		lblLightningTimeFile.setBounds(258, 271, 123, 14);
 		frmTclistCreator.getContentPane().add(lblLightningTimeFile);
 		
 		JLabel lblPath = new JLabel("Path");
-		lblPath.setBounds(300, 212, 46, 14);
+		lblPath.setBounds(391, 212, 46, 14);
 		frmTclistCreator.getContentPane().add(lblPath);
 		
 		JLabel lblPath_1 = new JLabel("Path");
-		lblPath_1.setBounds(300, 268, 46, 14);
+		lblPath_1.setBounds(391, 269, 46, 14);
 		frmTclistCreator.getContentPane().add(lblPath_1);
 		
 		case1checkbox = new JCheckBox("Case 1");
@@ -271,10 +254,22 @@ public class GUI {
 		case3checkbox.setBounds(300, 85, 97, 23);
 		frmTclistCreator.getContentPane().add(case3checkbox);
 		
-		case4checkbox = new JCheckBox("case 4");
+		case4checkbox = new JCheckBox("Case 4");
 		case4checkbox.setBounds(300, 111, 97, 23);
 		frmTclistCreator.getContentPane().add(case4checkbox);
 		
+		JLabel imageLabel = new JLabel("New label");
+		imageLabel.setBounds(10, 125, 238, 101);
+		frmTclistCreator.getContentPane().add(imageLabel);
 		
+		//We adjust image size to imageLabel size
+		
+		int h=imageLabel.getHeight();
+		int w= imageLabel.getWidth();
+		
+		ImageIcon image = new ImageIcon(getClass().getResource("Esquema.jpg"));//Load Image from the folder where 
+		ImageIcon image2=new ImageIcon(image.getImage().getScaledInstance(w, h, h));//Resize Image
+		imageLabel.setIcon(image2);		
+			
 	}
 }

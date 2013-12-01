@@ -268,7 +268,8 @@ public class GUI {
 		int h=imageLabel.getHeight();
 		int w= imageLabel.getWidth();
 		
-		ImageIcon image = new ImageIcon(getClass().getResource("Esquema.jpg"));//Load Image from the folder where 
+		//ImageIcon image = new ImageIcon(getClass().getResource("Esquema.jpg"));//Load Image from the folder where 
+		ImageIcon image =new ImageIcon("images\\Esquema.jpg");
 		ImageIcon image2=new ImageIcon(image.getImage().getScaledInstance(w, h, h));//Resize Image
 		imageLabel.setIcon(image2);		
 			

@@ -38,6 +38,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Iterator;
@@ -174,11 +175,27 @@ public class HUMDOpsTools {
     public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename)
     {
     	try{
+    		Calendar cal = Calendar.getInstance();
+    		SimpleDateFormat sdf=  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    		String currentDate = sdf.format(cal.getTime());
+    		
     		File f= new File(path+filename);
     		FileWriter fw = new FileWriter(f);
+    		//add path, name and date
+    		fw.write(path);
+    		fw.write(System.getProperty("line.separator"));
+    		fw.write(filename);
+    		fw.write(System.getProperty("line.separator"));
+    		fw.write(currentDate);
+    		//add white line
+    		fw.write(System.getProperty("line.separator"));
+    		fw.write(System.getProperty("line.separator"));
+    		
     		int k=0;
     		for (k=0;k<tclist.size();k++){
     			fw.write(tclist.get(k).print());
+    			//change line
+    			fw.write(System.getProperty("line.separator"));
     		}
     		fw.close();
     	}catch (Exception e){
@@ -199,6 +216,7 @@ public class HUMDOpsTools {
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path + filename, false)))    
         {
             os.writeObject(sequence);
+            os.close();
             
         } catch (Exception e) {
             e.printStackTrace();

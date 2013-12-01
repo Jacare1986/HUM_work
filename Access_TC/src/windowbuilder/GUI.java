@@ -7,6 +7,7 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -89,7 +90,7 @@ public class GUI {
 				try {
 					//1st we ask where do you want to save .ser file.								
 					if((case1checkbox.isSelected()==false)&&(case2checkbox.isSelected()==false)&&(case3checkbox.isSelected()==false)&&(case4checkbox.isSelected()==false)){
-						ErrorWindow ew=new ErrorWindow("¡Error! You must select a case type.");
+						ErrorWindow ew=new ErrorWindow("Error! You must select a case type.");
 						ew.setVisible(true);
 					}else{
 						JFileChooser chooser1 = new JFileChooser();
@@ -98,7 +99,7 @@ public class GUI {
 						chooser1.setFileFilter(filter);
 						if(chooser1.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 							//Get directory path
-							TCList_path=(chooser1.getCurrentDirectory().getPath())+"\\";
+							TCList_path=(chooser1.getCurrentDirectory().getPath())+File.separator;
 							Output_file_name=(chooser1.getSelectedFile().getName());
 													
 							M1 = Integer.parseInt(M1Field.getText());
@@ -133,17 +134,17 @@ public class GUI {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 					System.out.println("¡Error! Problem reading .csv files");
-					ErrorWindow ew = new ErrorWindow("¡Error! Problem reading .csv files.");
+					ErrorWindow ew = new ErrorWindow("Error! Problem reading .csv files.");
 					ew.setVisible(true);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					ErrorWindow ew = new ErrorWindow("¡Error! Please open .csv Files.");
+					ErrorWindow ew = new ErrorWindow("Error! Please open .csv Files.");
 					ew.setVisible(true);
 					//e.printStackTrace();
 				}catch (NumberFormatException e){
 					//Window message with error
 					System.out.println("Margins Error. Please, type an integer valid margin in seconds");
-					ErrorWindow ew = new ErrorWindow("¡Error! Please, type an integer valid margin in seconds.");
+					ErrorWindow ew = new ErrorWindow("Error! Please, type an integer valid margin in seconds.");
 					ew.setVisible(true);
 				}
 			}
@@ -242,20 +243,20 @@ public class GUI {
 		lblPath_1.setBounds(391, 269, 46, 14);
 		frmTclistCreator.getContentPane().add(lblPath_1);
 		
-		case1checkbox = new JCheckBox("Case 1");
+		case1checkbox = new JCheckBox("Light");
 		case1checkbox.setBounds(300, 34, 97, 23);
 		frmTclistCreator.getContentPane().add(case1checkbox);
 		
-		case2checkbox = new JCheckBox("Case 2");
+		case2checkbox = new JCheckBox("Eclipse");
 		case2checkbox.setBounds(300, 59, 97, 23);
 		frmTclistCreator.getContentPane().add(case2checkbox);
 		
-		case3checkbox = new JCheckBox("Case 3");
-		case3checkbox.setBounds(300, 85, 97, 23);
+		case3checkbox = new JCheckBox("Light + Eclipse");
+		case3checkbox.setBounds(300, 85, 137, 23);
 		frmTclistCreator.getContentPane().add(case3checkbox);
 		
-		case4checkbox = new JCheckBox("Case 4");
-		case4checkbox.setBounds(300, 111, 97, 23);
+		case4checkbox = new JCheckBox("Eclipse + Light");
+		case4checkbox.setBounds(300, 111, 137, 23);
 		frmTclistCreator.getContentPane().add(case4checkbox);
 		
 		JLabel imageLabel = new JLabel("New label");

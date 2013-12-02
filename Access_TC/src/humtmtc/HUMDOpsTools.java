@@ -42,6 +42,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import passes.*;
+import windowbuilder.ErrorWindow;
 import csvreader.*;
 
 /**
@@ -88,11 +89,17 @@ public class HUMDOpsTools {
 			    	k++;
 		    	}	
 		    }
+		    TC_List.add(createSchSummarizedTC());
 		    System.out.println("Total Passes programmed: "+k);
-			TC_List.add(createSchSummarizedTC());
-			//we write this TC_List in a file.
-			writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));
-			writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"));
+		    if(k==0){
+		    	ErrorWindow ew = new ErrorWindow("No passes matched your selection");
+				ew.setVisible(true);
+		    }else{
+		    	//we write this TC_List in a file.
+				writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));			
+				writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),case_type1,case_type2,case_type3,case_type4);
+		    }
+			
 		} catch (UnknownTCCodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -167,7 +174,7 @@ public class HUMDOpsTools {
         return (tc);
     }
     
-    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename)
+    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename, int case_type1, int case_type2, int case_type3, int case_type4)
     {
     	try{
     		Calendar cal = Calendar.getInstance();
@@ -182,6 +189,17 @@ public class HUMDOpsTools {
     		fw.write(filename);
     		fw.write(System.getProperty("line.separator"));
     		fw.write(currentDate);
+    		fw.write(System.getProperty("line.separator"));
+    		fw.write("Passes programmed : ");
+    		if(case_type1==1){
+    			fw.write("Light |");
+    		}if(case_type2==2){
+    			fw.write("Eclipse |");
+    		}if(case_type3==3){
+    			fw.write("Light+Eclipse |");
+    		}if(case_type4==4){
+    			fw.write("Eclipse + Light |");
+    		}	
     		//add white line
     		fw.write(System.getProperty("line.separator"));
     		fw.write(System.getProperty("line.separator"));

@@ -16,11 +16,11 @@ import java.text.ParseException;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
 import javax.swing.JFileChooser;
 
 import java.awt.Toolkit;
 
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -29,9 +29,20 @@ import javax.swing.ImageIcon;
 
 import org.humsat.demo.opstools.humtmtc.HUMDOpsTools;
 
-public class GUI {
+import javax.swing.JSeparator;
+import javax.swing.JMenuBar;
 
-	private static JFrame frmTclistCreator;
+import com.jgoodies.forms.factories.DefaultComponentFactory;
+
+import javax.swing.JMenuItem;
+import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
+
+public class GUI {
+	
+	private JPanel contentPane;
+
+	private static JFrame MainFrame;
 	private JTextField M1Field;
 	private JTextField M2Field;
 	private JTextField accesTimesField;
@@ -56,7 +67,7 @@ public class GUI {
 			public void run() {
 				try {
 					GUI window = new GUI();
-					window.frmTclistCreator.setVisible(true);
+					window.MainFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -76,11 +87,31 @@ public class GUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frmTclistCreator = new JFrame();
-		frmTclistCreator.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("/javax/swing/plaf/basic/icons/JavaCup16.png")));
-		frmTclistCreator.setTitle("TC_List Creator");
-		frmTclistCreator.setBounds(100, 100, 547, 415);
-		frmTclistCreator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//Specify frame features
+		MainFrame = new JFrame();
+		MainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("/javax/swing/plaf/basic/icons/JavaCup16.png")));
+		MainFrame.setTitle("TC_Creator");
+		MainFrame.setBounds(100, 100, 524, 446);
+		MainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//We create a JTabbedPane
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(10, 11, 511, 354);
+		MainFrame.getContentPane().add(tabbedPane);
+		
+		/*
+		 * Here we create and add the panels to the tabbedpane
+		 */
+		JPanel panel1 = new JPanel();
+		tabbedPane.addTab("Panel 1", null, panel1, null);
+		panel1.setLayout(null);
+		
+		JPanel panel2 = new JPanel();
+		tabbedPane.addTab("Panel 2", null, panel2, null);
+		panel2.setLayout(null);
+		
+		//***********************************************************
 		
 		JButton generateButton = new JButton("Generate");
 		generateButton.setBounds(238, 342, 86, 23);
@@ -136,7 +167,7 @@ public class GUI {
 							if(f.isFile()){
 								//The file already exists.Show a dialog box asking for overwriting
 								Object[] options = {"Yes","No"};
-								int n = JOptionPane.showOptionDialog(frmTclistCreator,"File already exists. Do you want to overwrite it?","Warning",
+								int n = JOptionPane.showOptionDialog(MainFrame,"File already exists. Do you want to overwrite it?","Warning",
 										JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE,null,options,options[1]);
 								if(n==0){//we have selected options [0] = YES
 									HUMDOpsTools.TCListCreator(M1,M2,case_type1,case_type2,case_type3,case_type4,AccesTimesPath,LightningPath,TCList_path, Output_file_name);
@@ -163,54 +194,64 @@ public class GUI {
 				}
 			}
 		});
-		frmTclistCreator.getContentPane().setLayout(null);
-		frmTclistCreator.getContentPane().add(generateButton);
+		//frmTclistCreator.getContentPane().add(generateButton);
+		panel1.add(generateButton);
 	    
 		JLabel lblM = new JLabel("M1");
 		lblM.setBounds(10, 38, 46, 14);
-		frmTclistCreator.getContentPane().add(lblM);
+		//frmTclistCreator.getContentPane().add(lblM);
+		panel1.add(lblM);
 		
 		JLabel lblM_1 = new JLabel("M2");
 		lblM_1.setBounds(10, 63, 46, 14);
-		frmTclistCreator.getContentPane().add(lblM_1);
+		//frmTclistCreator.getContentPane().add(lblM_1);
+		panel1.add(lblM_1);
 		
 		M1Field = new JTextField();
+		M1Field.setBounds(42, 35, 86, 20);
 		M1Field.setHorizontalAlignment(SwingConstants.TRAILING);
 		M1Field.setText("0");
-		M1Field.setBounds(42, 35, 86, 20);
-		frmTclistCreator.getContentPane().add(M1Field);
+	//	frmTclistCreator.getContentPane().add(M1Field);
+		panel1.add(M1Field);
 		M1Field.setColumns(10);
 		
 		M2Field = new JTextField();
+		M2Field.setBounds(42, 63, 86, 20);
 		M2Field.setHorizontalAlignment(SwingConstants.TRAILING);
 		M2Field.setText("0");
-		M2Field.setBounds(42, 63, 86, 20);
-		frmTclistCreator.getContentPane().add(M2Field);
+		//frmTclistCreator.getContentPane().add(M2Field);
+		panel1.add(M2Field);
 		M2Field.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("(sec)");
 		lblNewLabel.setBounds(138, 38, 46, 14);
-		frmTclistCreator.getContentPane().add(lblNewLabel);
+		//frmTclistCreator.getContentPane().add(lblNewLabel);
+		panel1.add(lblNewLabel);
 		
 		JLabel lblsec = new JLabel("(sec)");
 		lblsec.setBounds(138, 63, 46, 14);
-		frmTclistCreator.getContentPane().add(lblsec);
+		//frmTclistCreator.getContentPane().add(lblsec);
+		panel1.add(lblsec);
 		
 		JLabel lblSelectCaseType = new JLabel("Select Case Type");
 		lblSelectCaseType.setBounds(194, 38, 104, 14);
-		frmTclistCreator.getContentPane().add(lblSelectCaseType);
+		//frmTclistCreator.getContentPane().add(lblSelectCaseType);
+		panel1.add(lblSelectCaseType);
 		
 		accesTimesField = new JTextField();
 		accesTimesField.setBounds(391, 238, 86, 20);
-		frmTclistCreator.getContentPane().add(accesTimesField);
+		//frmTclistCreator.getContentPane().add(accesTimesField);
+		panel1.add(accesTimesField);
 		accesTimesField.setColumns(10);
 		
 		lightningField = new JTextField();
 		lightningField.setBounds(391, 293, 86, 20);
-		frmTclistCreator.getContentPane().add(lightningField);
+		//frmTclistCreator.getContentPane().add(lightningField);
+		panel1.add(lightningField);
 		lightningField.setColumns(10);
 		
 		JButton accesButton = new JButton("Open");
+		accesButton.setBounds(269, 237, 89, 23);
 		accesButton.setIcon(new ImageIcon(GUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
 		accesButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -222,10 +263,11 @@ public class GUI {
 				    }
 			}
 		});
-		accesButton.setBounds(269, 237, 89, 23);
-		frmTclistCreator.getContentPane().add(accesButton);
+		//frmTclistCreator.getContentPane().add(accesButton);
+		panel1.add(accesButton);
 		
 		JButton lightningButton = new JButton("Open");
+		lightningButton.setBounds(269, 292, 89, 23);
 		lightningButton.setIcon(new ImageIcon(GUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
 		lightningButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -237,54 +279,59 @@ public class GUI {
 				    }
 			}
 		});
-		lightningButton.setBounds(269, 292, 89, 23);
-		frmTclistCreator.getContentPane().add(lightningButton);
+		//frmTclistCreator.getContentPane().add(lightningButton);
+		panel1.add(lightningButton);
 		
 		JLabel lblAccesTimeFile = new JLabel("Acces Time File");
-		lblAccesTimeFile.setIcon(null);
 		lblAccesTimeFile.setBounds(258, 212, 89, 14);
-		frmTclistCreator.getContentPane().add(lblAccesTimeFile);
+		lblAccesTimeFile.setIcon(null);
+		//frmTclistCreator.getContentPane().add(lblAccesTimeFile);
+		panel1.add(lblAccesTimeFile);
 		
 		JLabel lblLightningTimeFile = new JLabel("Lightning Time File");
 		lblLightningTimeFile.setBounds(258, 271, 123, 14);
-		frmTclistCreator.getContentPane().add(lblLightningTimeFile);
+		//frmTclistCreator.getContentPane().add(lblLightningTimeFile);
+		panel1.add(lblLightningTimeFile);
 		
 		JLabel lblPath = new JLabel("Path");
 		lblPath.setBounds(391, 212, 46, 14);
-		frmTclistCreator.getContentPane().add(lblPath);
+		//frmTclistCreator.getContentPane().add(lblPath);
+		panel1.add(lblPath);
 		
 		JLabel lblPath_1 = new JLabel("Path");
 		lblPath_1.setBounds(391, 269, 46, 14);
-		frmTclistCreator.getContentPane().add(lblPath_1);
+		//frmTclistCreator.getContentPane().add(lblPath_1);
+		panel1.add(lblPath_1);
 		
 		case1checkbox = new JCheckBox("Light");
 		case1checkbox.setBounds(300, 34, 97, 23);
-		frmTclistCreator.getContentPane().add(case1checkbox);
+		//frmTclistCreator.getContentPane().add(case1checkbox);
+		panel1.add(case1checkbox);
 		
 		case2checkbox = new JCheckBox("Eclipse");
 		case2checkbox.setBounds(300, 59, 97, 23);
-		frmTclistCreator.getContentPane().add(case2checkbox);
+		//frmTclistCreator.getContentPane().add(case2checkbox);
+		panel1.add(case2checkbox);
 		
 		case3checkbox = new JCheckBox("Light & Eclipse");
 		case3checkbox.setBounds(300, 85, 137, 23);
-		frmTclistCreator.getContentPane().add(case3checkbox);
+		//frmTclistCreator.getContentPane().add(case3checkbox);
+		panel1.add(case3checkbox);
 		
 		case4checkbox = new JCheckBox("Eclipse & Light");
 		case4checkbox.setBounds(300, 111, 137, 23);
-		frmTclistCreator.getContentPane().add(case4checkbox);
+		//frmTclistCreator.getContentPane().add(case4checkbox);
+		panel1.add(case4checkbox);
 		
 		JLabel imageLabel = new JLabel("New label");
 		imageLabel.setBounds(10, 125, 238, 101);
-		frmTclistCreator.getContentPane().add(imageLabel);
+		//frmTclistCreator.getContentPane().add(imageLabel);
+		panel1.add(imageLabel);
 		
 		//Get dimensions of imageLabel
 		
 		int h=imageLabel.getHeight();
 		int w= imageLabel.getWidth();
-		
-		//ImageIcon image = new ImageIcon("images\\Esquema.jpg");//Load Image from the folder where 
-		//ImageIcon image2=new ImageIcon(image.getImage().getScaledInstance(w, h, h));//Resize Image
-		//imageLabel.setIcon(image2);
 		
 		URL imageurl = getClass().getResource("/images/Esquema.jpg");//Obtain url from the images package
 		ImageIcon image = new ImageIcon(imageurl);
@@ -295,12 +342,12 @@ public class GUI {
 	
 	public static void showError(String msg, String error_type){
 		Object[] obj={"OK"};
-		JOptionPane.showOptionDialog(frmTclistCreator,msg,error_type,
+		JOptionPane.showOptionDialog(MainFrame,msg,error_type,
 				JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,null,obj,obj[0]);		
 	}
 	public static void showWarning(String msg, String error_type){
 		Object[] obj={"OK"};
-		JOptionPane.showOptionDialog(frmTclistCreator,msg,error_type,
+		JOptionPane.showOptionDialog(MainFrame,msg,error_type,
 				JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE,null,obj,obj[0]);		
 	}
 }

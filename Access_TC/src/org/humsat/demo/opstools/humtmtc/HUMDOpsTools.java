@@ -28,6 +28,8 @@ import com.xatcobeo.gssw.tmtc.interfaces.TMTCInterface;
 import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCChangeToCommunicationMode;
 import com.xatcobeo.gssw.tmtc.services.OBOpsSchedulingService.TC.TCAddTelecommandAbsoluteTime;
 
+import experiments.ExperimentFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,9 +49,6 @@ import org.humsat.demo.opstools.csvreader.CSVReader;
 import org.humsat.demo.opstools.passes.CommunicationPass;
 import org.humsat.demo.opstools.windowbuilder.GUI;
 
-import passes.*;
-import csvreader.*;
-import windowbuilder.*;
 
 /**
  *
@@ -80,6 +79,17 @@ public class HUMDOpsTools {
 			
 			//Second --> Classify each pass in cases depending on light conditions	
 			CSVReader.PassesType(pases, LightningPath);
+			
+			
+			//Prueba ExperimentFactory
+			
+			ExperimentFactory ef = new ExperimentFactory();
+			Calendar cal = Calendar.getInstance();
+    		Date d= cal.getTime();
+			
+			System.out.println(ef.getExperiment(d, 2, "prueba 1"));
+			
+			//Fin prueba ExperimentFactory
  
 			//Third --> Create a TC_List
 		    /**

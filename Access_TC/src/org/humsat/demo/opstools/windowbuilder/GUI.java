@@ -2,7 +2,6 @@
 package org.humsat.demo.opstools.windowbuilder;
 
 import java.awt.EventQueue;
-import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -19,8 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.JFileChooser;
 
 import java.awt.Toolkit;
-
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -29,12 +26,11 @@ import javax.swing.ImageIcon;
 
 import org.humsat.demo.opstools.humtmtc.HUMDOpsTools;
 
-import javax.swing.JSeparator;
-import javax.swing.JMenuBar;
 
-import com.jgoodies.forms.factories.DefaultComponentFactory;
 
-import javax.swing.JMenuItem;
+
+
+
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 
@@ -48,14 +44,16 @@ public class GUI {
 	private JTextField accesTimesField;
 	private JTextField lightningField;
 	private JFileChooser chooser = new JFileChooser();
-	String AccesTimesPath;
-	String LightningPath;
-	String TCList_path;
-	String Output_file_name;
 	private JCheckBox case1checkbox;
 	private JCheckBox case2checkbox;
 	private JCheckBox case3checkbox;
 	private JCheckBox case4checkbox;
+	private JTextField ExperimentsField;
+	String AccesTimesPath;
+	String LightningPath;
+	String TCList_path;
+	String Output_file_name;
+	String ExperimentsPath;
 	int M1,M2;
 	boolean pass_selected= false;
 
@@ -113,6 +111,11 @@ public class GUI {
 		
 		//***********************************************************
 		
+		
+		/*
+		 * Here we manage the Panel 1
+		 */
+		
 		JButton generateButton = new JButton("Generate");
 		generateButton.setBounds(238, 342, 86, 23);
 		generateButton.addActionListener(new ActionListener() {
@@ -129,15 +132,14 @@ public class GUI {
 						showError("Error! You must select a case type.","Error");
 					}else{
 						//2nd Open filechooser to save our output file.
-						JFileChooser chooser1 = new JFileChooser();
-						chooser1.setDialogTitle("Save File");
+						chooser.setDialogTitle("Save File");
 						FileNameExtensionFilter filter = new FileNameExtensionFilter(".ser", "ser");
-						chooser1.setFileFilter(filter);
-						if(chooser1.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {//we press save
+						chooser.setFileFilter(filter);
+						if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {//we press save
 							
 							//Get directory path
-							TCList_path=(chooser1.getCurrentDirectory().getPath())+File.separator;
-							Output_file_name=(chooser1.getSelectedFile().getName());
+							TCList_path=(chooser.getCurrentDirectory().getPath())+File.separator;
+							Output_file_name=(chooser.getSelectedFile().getName());
 							
 							//Get M1 and M2 parameters
 							M1 = Integer.parseInt(M1Field.getText());
@@ -175,8 +177,9 @@ public class GUI {
 							}else{//the file doesn`t exist, so we create a TC_List
 								HUMDOpsTools.TCListCreator(M1,M2,case_type1,case_type2,case_type3,case_type4,AccesTimesPath,LightningPath,TCList_path, Output_file_name);						
 							}	
-						}		
+						}
 					}
+					
 				}catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
@@ -254,7 +257,7 @@ public class GUI {
 		accesButton.setBounds(269, 237, 89, 23);
 		accesButton.setIcon(new ImageIcon(GUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
 		accesButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {//When Acces Times Open button is pressed, a JFileChooser is created to select a file
 				  FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
 				    chooser.setFileFilter(filter);
 				    if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -270,7 +273,7 @@ public class GUI {
 		lightningButton.setBounds(269, 292, 89, 23);
 		lightningButton.setIcon(new ImageIcon(GUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
 		lightningButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {//When Lightning Open button is pressed, a JFileChooser is created to select a file
 				  FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
 				    chooser.setFileFilter(filter);
 				    if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -337,8 +340,85 @@ public class GUI {
 		ImageIcon image = new ImageIcon(imageurl);
 		ImageIcon image2 = new ImageIcon (image.getImage().getScaledInstance(w, h, h)); //Resize image
 		imageLabel.setIcon(image2);
-			
-	}
+		//***********END MANAGING PANEL 1*********
+		
+		
+		/*
+		 * Here we manage the Panel 2
+		 */
+		
+		ExperimentsField = new JTextField();
+		ExperimentsField.setBounds(193, 41, 86, 20);
+		panel2.add(ExperimentsField);
+		ExperimentsField.setColumns(10);
+		
+		JButton OpenExpFile = new JButton("Open");
+		OpenExpFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+			    chooser.setFileFilter(filter);
+			    if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			    	ExperimentsPath = chooser.getSelectedFile().getPath();
+			    	ExperimentsField.setText(ExperimentsPath);
+			    }
+			}
+		});
+		OpenExpFile.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
+		OpenExpFile.setBounds(59, 40, 89, 23);
+		panel2.add(OpenExpFile);
+		
+		JLabel lblExperimentsFile = new JLabel("Experiments File");
+		lblExperimentsFile.setBounds(56, 15, 92, 14);
+		panel2.add(lblExperimentsFile);
+		
+		JButton GenerateExpButton = new JButton("Generate");
+		GenerateExpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try{
+					//When we press generate, we are asked where to save the output file
+					chooser.setDialogTitle("Save File");
+					FileNameExtensionFilter filter = new FileNameExtensionFilter(".ser", "ser");
+					chooser.setFileFilter(filter);
+					if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
+						//First, check if the filename already exists
+						
+						//Get directory path
+						ExperimentsPath=(chooser.getCurrentDirectory().getPath())+File.separator;
+						Output_file_name=(chooser.getSelectedFile().getName());
+						
+						//Read CSV path 
+						ExperimentsPath=ExperimentsField.getText();
+						
+						File f = new File(ExperimentsPath+Output_file_name+".ser");
+						if(f.isFile()){
+							//The file already exists.Show a dialog box asking for overwriting
+							Object[] options = {"Yes","No"};
+							int n = JOptionPane.showOptionDialog(MainFrame,"File already exists. Do you want to overwrite it?","Warning",
+									JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE,null,options,options[1]);
+							if(n==0){//We have selected options [0] = YES, so we create the Experiments File
+								HUMDOpsTools.ExperimentsCreator(ExperimentsPath);
+							}
+						}else{//the file doesn`t exist, so we create the Experiments File
+							HUMDOpsTools.ExperimentsCreator(ExperimentsPath);
+						}	
+					}
+				}catch (ParseException e1){
+					
+				}catch (IOException e1){
+					
+				}
+					
+			}
+		});
+		GenerateExpButton.setBounds(163, 153, 89, 23);
+		panel2.add(GenerateExpButton);
+		
+		JLabel lblExpPath = new JLabel("Path");
+		lblExpPath.setBounds(194, 16, 46, 14);
+		panel2.add(lblExpPath);
+	}	
+	
+	//Errors
 	
 	public static void showError(String msg, String error_type){
 		Object[] obj={"OK"};

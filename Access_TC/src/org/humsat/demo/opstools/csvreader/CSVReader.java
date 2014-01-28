@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.humsat.demo.opstools.passes.CommunicationPass;
+import org.humsat.demo.opstools.passes.Experiments;
 
 
 public class CSVReader {
@@ -30,7 +31,7 @@ public class CSVReader {
 				/**
 				 * Don't know why it reads an extra line with "" and not null, so it cannot split and makes an exception
 				 * I have to make sure at least the line read is longer than that to obtain values. 
-				 * Then, it reaches an null correctly.
+				 * Then, it reaches a null correctly.
 				 */
 				
 				//Obtain different fields from the line read to build a CommunicationPass
@@ -139,6 +140,40 @@ public class CSVReader {
 				}
 			}
 			br.close();
+		
+	}
+	
+	public static ArrayList<Experiments> getExperimentsInfo(String path) throws IOException, ParseException{
+		
+		SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
+		Date start_time;
+		
+		FileReader f= new FileReader(path);
+		BufferedReader br = new BufferedReader(f);
+		String line;
+		String[] fields;
+		ArrayList<Experiments> ExperimentsList = new ArrayList<Experiments>();
+		
+		//We read the first line which only contains format information
+		br.readLine();
+		
+		//Read the rest of the file
+		while((line=br.readLine())!=null){
+			
+			if(line.length()>=4){
+				
+				fields=line.split(",");
+				
+				String ID = fields[0];
+				start_time = sdf.parse(fields[1]);
+				String Name = fields[2];
+				String Configuration = fields[3];				
+				ExperimentsList.add(new Experiments(ID, start_time, Name, Configuration));			
+				
+			}			
+		}
+		br.close();
+		return ExperimentsList;
 		
 	}
 

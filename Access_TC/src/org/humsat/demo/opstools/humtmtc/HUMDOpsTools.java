@@ -42,11 +42,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Locale;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.humsat.demo.opstools.csvreader.CSVReader;
 import org.humsat.demo.opstools.passes.CommunicationPass;
+import org.humsat.demo.opstools.passes.Experiments;
 import org.humsat.demo.opstools.windowbuilder.GUI;
 
 
@@ -79,17 +81,6 @@ public class HUMDOpsTools {
 			
 			//Second --> Classify each pass in cases depending on light conditions	
 			CSVReader.PassesType(pases, LightningPath);
-			
-			
-			//Prueba ExperimentFactory
-			
-			ExperimentFactory ef = new ExperimentFactory();
-			Calendar cal = Calendar.getInstance();
-    		Date d= cal.getTime();
-			
-			System.out.println(ef.getExperiment(d, 2, "prueba 1"));
-			
-			//Fin prueba ExperimentFactory
  
 			//Third --> Create a TC_List
 		    /**
@@ -127,7 +118,32 @@ public class HUMDOpsTools {
 		
 	}
 	
-
+	public static void ExperimentsCreator(String ExperimentsPath) throws IOException, ParseException{
+		
+		ArrayList<Experiments> experimentslist = new ArrayList<Experiments>();
+		ArrayList<TMTC> tclist = new ArrayList<TMTC>();
+		
+		experimentslist=CSVReader.getExperimentsInfo(ExperimentsPath);
+		String ID=experimentslist.get(0).getID();
+		Date dt = experimentslist.get(0).getStartTime();
+		String Name = experimentslist.get(0).getName();
+		String config = experimentslist.get(0).getConfiguration();
+		
+		ExperimentFactory ef = new ExperimentFactory();
+		tclist = ef.getExperiment(ID, dt, Name, config);
+			
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static TMTC createSchCommPassTC(CommunicationPass passObject) throws UnknownTCCodeException, UnknownException, ParseException {
         
         // Start time of the COMMS task
@@ -278,6 +294,22 @@ public class HUMDOpsTools {
         }
 
         return (sequence);
+    }
+    
+    /**
+     * Converts a Date value into a Timestamp and returns it.
+     * @param date_var, variable Date to convert into Timestamp.
+     * @return ts, timestamp.
+     */
+    
+    private static Timestamp Date2TimeStamp(Date date_var){
+    		
+    	//get Timestamp from a date
+		Timestamp ts = new Timestamp (date_var.getTime()); //import java.sql.Timestamp;
+    	System.out.println(ts);
+    	
+    	return (ts);
+    	
     }
 
 }

@@ -1,0 +1,48 @@
+package experiments;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+import experiments.TCSequences;
+
+import com.xatcobeo.gssw.tmtc.TMTC;
+
+public class ExperimentFactory {
+	
+	/*
+	 * This class performs different experiments and
+	 * we can get an ArrayList of TC for each experiment
+	 */	
+	
+	public ArrayList<TMTC> getExperiment(String ID, Date dt, String Name, String config){
+				
+		ArrayList<TMTC> TCSequence =null;
+		
+		
+		switch (Name){
+		
+		case "HUMPLNoiseBandsSequence":
+			HUMPLNoiseBandsSequence exp1 = new HUMPLNoiseBandsSequence(dt,config);
+			TCSequence = exp1.getTCSequence();
+			System.out.println("Experimento "+ID+" "+config+" "+dt);	
+			//Call Experiment 1
+			break;
+			
+		case "Experiment 2":
+			System.out.println("Experimento "+ID+" "+config+" "+dt);
+			//Call Experiment 2
+			break;
+			
+		case "Experiment 3":
+			System.out.println("Experimento "+ID+" "+config+" "+dt);;	
+			//Call Experiment 3
+			break;
+			
+		default: System.out.println("Experimento no valido");
+		}		
+		
+		return TCSequence;//return an ArrayList of TC
+		
+	}
+	
+}

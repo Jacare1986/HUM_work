@@ -1,0 +1,57 @@
+package experiments;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import experiments.TCSequences;
+
+import com.xatcobeo.gssw.tmtc.TMTC;
+
+public class ExperimentFactory {
+	
+	/*
+	 * This class performs different experiments and
+	 * we can get an ArrayList of TC for each experiment
+	 */	
+	
+	public ArrayList<TMTC> getExperiment(Timestamp ts, String ID, String param){
+		
+		String cadena = null;
+		ArrayList<TMTC> TCSequence =null;
+		
+		switch (ID){
+		
+		case "Experiment 1":
+			
+			
+			System.out.println("Experimento "+ID+" "+param+" "+ts);
+			cadena= "conseguido 1";		
+			//Call Experiment 1
+			break;
+			
+		case "Experiment 2":
+			System.out.println("Experimento "+ID+" "+param+" "+ts);
+			cadena= "conseguido 2";	
+			//Call Experiment 2
+			break;
+			
+		case "Experiment 3":
+			System.out.println("Experimento "+ID+" "+param+" "+ts);
+			cadena= "conseguido 3";	
+			//Call Experiment 3
+			break;
+			
+		default: System.out.println("Experimento no valido");
+		cadena = "default";
+		}		
+		
+		return TCSequence;//return an ArrayList of TC
+		
+	}
+		
+	//Experiments
+	private void Experiment1 (Timestamp ts, String param){
+		
+	}
+	
+	
+}

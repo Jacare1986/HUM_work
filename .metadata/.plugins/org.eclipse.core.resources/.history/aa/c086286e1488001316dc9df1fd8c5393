@@ -1,0 +1,18 @@
+package experiments;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.xatcobeo.gssw.tmtc.TMTC;
+
+public interface TCSequences {
+	
+	Date StartTime = null;
+	String Name = null;
+	String Configuration = null;
+	
+	public ArrayList<TMTC> getTCSequence(); //just declaration of method
+	
+		
+
+}

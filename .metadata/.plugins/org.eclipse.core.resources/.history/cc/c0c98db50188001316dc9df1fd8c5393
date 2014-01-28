@@ -1,0 +1,11 @@
+package experiments;
+
+import java.util.ArrayList;
+import com.xatcobeo.gssw.tmtc.TMTC;
+
+public interface TCSequences {
+	
+	 public ArrayList<TMTC>getTCSequence(); //just declaration of method
+		
+
+}

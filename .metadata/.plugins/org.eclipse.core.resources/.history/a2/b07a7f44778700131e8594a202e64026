@@ -1,0 +1,118 @@
+/**
+ * Copyright 2014 - University of Vigo - Spain (www.uvigo.es)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package org.humsat.demo.gssw.opstools.tcsequences.tcwrappers;
+
+import com.xatcobeo.gssw.tmtc.DataTypes.Data;
+import com.xatcobeo.gssw.tmtc.DataTypes.NumericField;
+import com.xatcobeo.gssw.tmtc.TMTC;
+import com.xatcobeo.gssw.tmtc.TMTCSet;
+import com.xatcobeo.gssw.tmtc.exceptions.UnknownException;
+import com.xatcobeo.gssw.tmtc.exceptions.UnknownTCCodeException;
+import com.xatcobeo.gssw.tmtc.interfaces.TMTCInterface;
+import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCConfigureHUMPLParameter;
+import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCLoadHUMPLConfiguration;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author alberto.gonzalez(at)humsat.org
+ */
+public class OPService {
+    
+    public static TMTC HUMPLOn(){
+        try {
+            return TMTCSet.createTC(TMTCInterface.TC_TURN_ON_HUMPL_ID);
+            
+        } catch (UnknownTCCodeException ex) {
+            Logger.getLogger(OPService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    public static TMTC HUMPLOff(){
+        try {
+            return TMTCSet.createTC(TMTCInterface.TC_TURN_OFF_HUMPL_ID);
+            
+        } catch (UnknownTCCodeException ex) {
+            Logger.getLogger(OPService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    public static TMTC HUMPLToTest(){
+        try {
+            return TMTCSet.createTC(TMTCInterface.TC_GO_HUMPL_TEST_MODE_ID);
+            
+        } catch (UnknownTCCodeException ex) {
+            Logger.getLogger(OPService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+   public static TMTC HUMPLConfigParam(int address, int length, String parameter){
+       try {
+           TMTC HUMPLParamTC = TMTCSet.createTC(TMTCInterface.TC_CONFIGURE_HUMPL_PARAMETER_ID);
+            
+           NumericField addressNF = new NumericField(NumericField.UINT16);
+           addressNF.setIntValue(address);
+           
+           NumericField lengthNF = new NumericField(NumericField.BYTE_TOT);
+           lengthNF.setIntValue(length);
+           
+           Data data = new Data();
+           data.setData(parameter);     
+                   
+           HashMap parameters = new HashMap<>();
+           parameters.put(TCConfigureHUMPLParameter.PARAMETER_ADDRESS,
+                    addressNF);
+           parameters.put(TCConfigureHUMPLParameter.LENGTH,
+                    lengthNF);
+           parameters.put(TCConfigureHUMPLParameter.PARAMETER,
+                    data);
+           
+            HUMPLParamTC.setParams(parameters);
+            
+            return HUMPLParamTC;
+            
+       } catch (UnknownTCCodeException | UnknownException ex) {
+           Logger.getLogger(OPService.class.getName()).log(Level.SEVERE, null, ex);
+           return null;
+       }
+   }
+   
+   public static TMTC HUMPLConfigLoad(int config){
+       try {
+           HashMap parameters = new HashMap<>();
+           
+           TMTC HUMPLLoadTC = TMTCSet.createTC(TMTCInterface.TC_LOAD_HUMPL_CONFIGURATION_ID);
+           
+           NumericField HUMPLConfiguration = new NumericField(NumericField.BYTE_TOT);
+           HUMPLConfiguration.setIntValue(4);
+           parameters.put(TCLoadHUMPLConfiguration.CONFIGURATION, HUMPLConfiguration);
+           
+           HUMPLLoadTC.setParams(parameters);
+           
+           return HUMPLLoadTC;
+           
+       } catch (UnknownTCCodeException | UnknownException ex) {
+           Logger.getLogger(OPService.class.getName()).log(Level.SEVERE, null, ex);
+           return null;
+       }
+   } 
+}

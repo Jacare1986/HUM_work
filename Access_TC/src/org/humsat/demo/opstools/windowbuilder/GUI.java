@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.JFileChooser;
 
 import java.awt.Toolkit;
+
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -25,6 +26,7 @@ import javax.swing.JCheckBox;
 import javax.swing.ImageIcon; 
 
 import org.humsat.demo.opstools.humtmtc.HUMDOpsTools;
+
 
 
 
@@ -102,18 +104,18 @@ public class GUI {
 		 * Here we create and add the panels to the tabbedpane
 		 */
 		JPanel panel1 = new JPanel();
-		tabbedPane.addTab("Panel 1", null, panel1, null);
+		tabbedPane.addTab("COMM", null, panel1, null);
 		panel1.setLayout(null);
 		
 		JPanel panel2 = new JPanel();
-		tabbedPane.addTab("Panel 2", null, panel2, null);
+		tabbedPane.addTab("EXP", null, panel2, null);
 		panel2.setLayout(null);
 		
 		//***********************************************************
 		
 		
 		/*
-		 * Here we manage the Panel 1
+		 * Here we manage the COMMUNICATIONS tab
 		 */
 		
 		JButton generateButton = new JButton("Generate");
@@ -137,7 +139,7 @@ public class GUI {
 						chooser.setFileFilter(filter);
 						if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {//we press save
 							
-							//Get directory path
+							//Get directory path to save output file
 							TCList_path=(chooser.getCurrentDirectory().getPath())+File.separator;
 							Output_file_name=(chooser.getSelectedFile().getName());
 							
@@ -160,7 +162,7 @@ public class GUI {
 																		
 							System.out.println("Pass Type to program: 1 "+case1checkbox.isSelected()+ " 2 "+case2checkbox.isSelected()+" 3 "+case3checkbox.isSelected()+" 4 "+case4checkbox.isSelected());
 							
-							//Read the paths of the CSV Files 
+							//Read the paths of the CSV Files we have loaded
 							AccesTimesPath=accesTimesField.getText();
 							LightningPath=lightningField.getText();
 							
@@ -344,11 +346,11 @@ public class GUI {
 		
 		
 		/*
-		 * Here we manage the Panel 2
+		 * Here we manage the EXPERIMENTS tab
 		 */
 		
 		ExperimentsField = new JTextField();
-		ExperimentsField.setBounds(193, 41, 86, 20);
+		ExperimentsField.setBounds(148, 41, 86, 20);
 		panel2.add(ExperimentsField);
 		ExperimentsField.setColumns(10);
 		
@@ -364,11 +366,11 @@ public class GUI {
 			}
 		});
 		OpenExpFile.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/windows/icons/Directory.gif")));
-		OpenExpFile.setBounds(59, 40, 89, 23);
+		OpenExpFile.setBounds(20, 40, 89, 23);
 		panel2.add(OpenExpFile);
 		
 		JLabel lblExperimentsFile = new JLabel("Experiments File");
-		lblExperimentsFile.setBounds(56, 15, 92, 14);
+		lblExperimentsFile.setBounds(20, 15, 113, 14);
 		panel2.add(lblExperimentsFile);
 		
 		JButton GenerateExpButton = new JButton("Generate");
@@ -382,39 +384,42 @@ public class GUI {
 					if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
 						//First, check if the filename already exists
 						
-						//Get directory path
-						ExperimentsPath=(chooser.getCurrentDirectory().getPath())+File.separator;
+						//Get directory path to save output file
+						TCList_path=(chooser.getCurrentDirectory().getPath())+File.separator;
 						Output_file_name=(chooser.getSelectedFile().getName());
 						
 						//Read CSV path 
 						ExperimentsPath=ExperimentsField.getText();
 						
-						File f = new File(ExperimentsPath+Output_file_name+".ser");
+						File f = new File(TCList_path+Output_file_name+".ser");
 						if(f.isFile()){
 							//The file already exists.Show a dialog box asking for overwriting
 							Object[] options = {"Yes","No"};
 							int n = JOptionPane.showOptionDialog(MainFrame,"File already exists. Do you want to overwrite it?","Warning",
 									JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE,null,options,options[1]);
 							if(n==0){//We have selected options [0] = YES, so we create the Experiments File
-								HUMDOpsTools.ExperimentsCreator(ExperimentsPath);
+								HUMDOpsTools.ExperimentsCreator(ExperimentsPath, TCList_path, Output_file_name);
 							}
 						}else{//the file doesn`t exist, so we create the Experiments File
-							HUMDOpsTools.ExperimentsCreator(ExperimentsPath);
+							HUMDOpsTools.ExperimentsCreator(ExperimentsPath, TCList_path, Output_file_name);
 						}	
 					}
 				}catch (ParseException e1){
-					
+					showError("Error! Problem reading .csv files.","Error");
 				}catch (IOException e1){
-					
+					showError("Error! Please open .csv Files.","Error");			
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 					
 			}
 		});
-		GenerateExpButton.setBounds(163, 153, 89, 23);
+		GenerateExpButton.setBounds(63, 113, 89, 23);
 		panel2.add(GenerateExpButton);
 		
 		JLabel lblExpPath = new JLabel("Path");
-		lblExpPath.setBounds(194, 16, 46, 14);
+		lblExpPath.setBounds(148, 15, 46, 14);
 		panel2.add(lblExpPath);
 	}	
 	

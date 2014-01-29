@@ -101,11 +101,11 @@ public class HUMDOpsTools {
 		    if(k==0){
 		    	//ErrorWindow ew = new ErrorWindow("No passes matched your selection");
 				//ew.setVisible(true);		    	
-		    	GUI.showWarning("No passes matched your selection", "Warning");
+				GUI.showWarning("No passes matched your selection", "Warning");
 		    }else{
 		    	//we write this TC_List in a file.
 				writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));			
-				writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),case_type1,case_type2,case_type3,case_type4);
+				writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),1,case_type1,case_type2,case_type3,case_type4);
 		    }
 			
 		} catch (UnknownTCCodeException e) {
@@ -118,30 +118,35 @@ public class HUMDOpsTools {
 		
 	}
 	
-	public static void ExperimentsCreator(String ExperimentsPath) throws IOException, ParseException{
+	public static void ExperimentsCreator(String ExperimentsPath, String TCList_path, String Output_file_name) throws IOException, ParseException, ClassNotFoundException{
 		
 		ArrayList<Experiments> experimentslist = new ArrayList<Experiments>();
-		ArrayList<TMTC> tclist = new ArrayList<TMTC>();
+		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
+		int it=0;
 		
 		experimentslist=CSVReader.getExperimentsInfo(ExperimentsPath);
-		String ID=experimentslist.get(0).getID();
-		Date dt = experimentslist.get(0).getStartTime();
-		String Name = experimentslist.get(0).getName();
-		String config = experimentslist.get(0).getConfiguration();
-		
 		ExperimentFactory ef = new ExperimentFactory();
-		tclist = ef.getExperiment(ID, dt, Name, config);
+		
+		for (it=0;it<experimentslist.size();it++){
+			//Get parameters for each experiment
+			String ID=experimentslist.get(0).getID();
+			Date dt = experimentslist.get(0).getStartTime();
+			String Name = experimentslist.get(0).getName();
+			String config = experimentslist.get(0).getConfiguration();
+			//get TC List for each experiment
+			TC_List = ef.getExperiment(ID, dt, Name, config);
+			
+			//Write TC List in a file
+			writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));			
+			writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),2,0,0,0,0);
+			
+			
+		}
+		
 			
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	
 	
 	public static TMTC createSchCommPassTC(CommunicationPass passObject) throws UnknownTCCodeException, UnknownException, ParseException {
@@ -207,7 +212,7 @@ public class HUMDOpsTools {
         return (tc);
     }
     
-    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename, int case_type1, int case_type2, int case_type3, int case_type4)
+    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename, int TC_List_type, int case_type1, int case_type2, int case_type3, int case_type4)
     {
     	try{
     		Calendar cal = Calendar.getInstance();
@@ -223,16 +228,21 @@ public class HUMDOpsTools {
     		fw.write(System.getProperty("line.separator"));
     		fw.write(currentDate);
     		fw.write(System.getProperty("line.separator"));
-    		fw.write("Passes programmed : ");
-    		if(case_type1==1){
-    			fw.write("Light |");
-    		}if(case_type2==2){
-    			fw.write("Eclipse |");
-    		}if(case_type3==3){
-    			fw.write("Light & Eclipse |");
-    		}if(case_type4==4){
-    			fw.write("Eclipse & Light |");
-    		}	
+    		if(TC_List_type==1){ //Communications TC_List
+    			fw.write("Passes programmed : ");
+        		if(case_type1==1){
+        			fw.write("Light |");
+        		}if(case_type2==2){
+        			fw.write("Eclipse |");
+        		}if(case_type3==3){
+        			fw.write("Light & Eclipse |");
+        		}if(case_type4==4){
+        			fw.write("Eclipse & Light |");
+        		}	
+    		}if (TC_List_type==2){//Experiments TC_List
+    			fw.write("Experiment's TC List ");
+    		}
+    		
     		//add white line
     		fw.write(System.getProperty("line.separator"));
     		fw.write("***********************");

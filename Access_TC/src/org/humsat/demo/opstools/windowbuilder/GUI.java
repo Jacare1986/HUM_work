@@ -33,6 +33,7 @@ import org.humsat.demo.opstools.humtmtc.HUMDOpsTools;
 
 
 
+
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 
@@ -142,6 +143,13 @@ public class GUI {
 							//Get directory path to save output file
 							TCList_path=(chooser.getCurrentDirectory().getPath())+File.separator;
 							Output_file_name=(chooser.getSelectedFile().getName());
+							
+							//Remove extension if the we have named it with extension
+							if(Output_file_name.endsWith(".ser")){
+								Output_file_name=Output_file_name.substring(0,(Output_file_name.lastIndexOf(".ser")));
+							}else{
+								//Do nothing
+							}
 							
 							//Get M1 and M2 parameters
 							M1 = Integer.parseInt(M1Field.getText());
@@ -387,6 +395,12 @@ public class GUI {
 						//Get directory path to save output file
 						TCList_path=(chooser.getCurrentDirectory().getPath())+File.separator;
 						Output_file_name=(chooser.getSelectedFile().getName());
+						//Remove extension if the we have named it with extension
+						if(Output_file_name.endsWith(".ser")){
+							Output_file_name=Output_file_name.substring(0,(Output_file_name.lastIndexOf(".ser")));
+						}else{
+							//Do nothing
+						}
 						
 						//Read CSV path 
 						ExperimentsPath=ExperimentsField.getText();
@@ -411,6 +425,10 @@ public class GUI {
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+					showError("Experiment not found","Error");
 				}
 					
 			}

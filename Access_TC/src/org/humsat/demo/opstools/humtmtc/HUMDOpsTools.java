@@ -28,7 +28,9 @@ import com.xatcobeo.gssw.tmtc.interfaces.TMTCInterface;
 import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCChangeToCommunicationMode;
 import com.xatcobeo.gssw.tmtc.services.OBOpsSchedulingService.TC.TCAddTelecommandAbsoluteTime;
 
-import experiments.ExperimentFactory;
+
+//import experiments.ExperimentFactory;
+import org.humsat.demo.gssw.opstools.tcsequences.ExperimentFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,7 +107,7 @@ public class HUMDOpsTools {
 		    }else{
 		    	//we write this TC_List in a file.
 				writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));			
-				writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),1,case_type1,case_type2,case_type3,case_type4);
+				writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),"Communications", case_type1,case_type2,case_type3,case_type4);
 		    }
 			
 		} catch (UnknownTCCodeException e) {
@@ -118,9 +120,10 @@ public class HUMDOpsTools {
 		
 	}
 	
-	public static void ExperimentsCreator(String ExperimentsPath, String TCList_path, String Output_file_name) throws IOException, ParseException, ClassNotFoundException{
+	public static void ExperimentsCreator(String ExperimentsPath, String TCList_path, String Output_file_name) throws Exception{
 		
 		ArrayList<Experiments> experimentslist = new ArrayList<Experiments>();
+		//ArrayList<ArrayList> TC_List = new ArrayList<ArrayList>();
 		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
 		int it=0;
 		
@@ -129,21 +132,17 @@ public class HUMDOpsTools {
 		
 		for (it=0;it<experimentslist.size();it++){
 			//Get parameters for each experiment
-			String ID=experimentslist.get(0).getID();
-			Date dt = experimentslist.get(0).getStartTime();
-			String Name = experimentslist.get(0).getName();
-			String config = experimentslist.get(0).getConfiguration();
+			String ID=experimentslist.get(it).getID();
+			Date dt = experimentslist.get(it).getStartTime();
+			String Name = experimentslist.get(it).getName();
+			String config = experimentslist.get(it).getConfiguration();
 			//get TC List for each experiment
-			TC_List = ef.getExperiment(ID, dt, Name, config);
-			
-			//Write TC List in a file
-			writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));			
-			writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),2,0,0,0,0);
-			
-			
+			TC_List.addAll(ef.getExperiment(ID, dt, Name, config));
 		}
-		
-			
+		//Write TC List in a file
+		writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));		
+		writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),"Experiments",0,0,0,0);
+					
 	}
 	
 		
@@ -212,7 +211,7 @@ public class HUMDOpsTools {
         return (tc);
     }
     
-    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename, int TC_List_type, int case_type1, int case_type2, int case_type3, int case_type4)
+    public static void writeSequenceTXT(ArrayList<TMTC> tclist, String path, String filename, String st_type, int case_type1, int case_type2, int case_type3, int case_type4)
     {
     	try{
     		Calendar cal = Calendar.getInstance();
@@ -228,19 +227,25 @@ public class HUMDOpsTools {
     		fw.write(System.getProperty("line.separator"));
     		fw.write(currentDate);
     		fw.write(System.getProperty("line.separator"));
-    		if(TC_List_type==1){ //Communications TC_List
+    		switch (st_type){
+    		
+    		case "Communications":
     			fw.write("Passes programmed : ");
-        		if(case_type1==1){
-        			fw.write("Light |");
-        		}if(case_type2==2){
-        			fw.write("Eclipse |");
-        		}if(case_type3==3){
-        			fw.write("Light & Eclipse |");
-        		}if(case_type4==4){
-        			fw.write("Eclipse & Light |");
-        		}	
-    		}if (TC_List_type==2){//Experiments TC_List
-    			fw.write("Experiment's TC List ");
+    			if(case_type1==1){
+           			fw.write("Light |");
+           		}if(case_type2==2){
+           			fw.write("Eclipse |");
+           		}if(case_type3==3){
+           			fw.write("Light & Eclipse |");
+           		}if(case_type4==4){
+           			fw.write("Eclipse & Light |");
+           		}			
+           		break;
+           		
+    		case "Experiments":
+    			fw.write("Experiments");
+    			break;
+    			
     		}
     		
     		//add white line
@@ -251,7 +256,7 @@ public class HUMDOpsTools {
     		
     		int k=0;
     		for (k=0;k<tclist.size();k++){
-    			fw.write(tclist.get(k).print());
+    			fw.write((tclist.get(k)).print());
     			//change line
     			fw.write("***********************");
     			//fw.write(System.getProperty("line.separator"));
@@ -270,7 +275,7 @@ public class HUMDOpsTools {
      * @param path, path to the sequence file.
      * @param filename, name of the file.
      */
-    public static void writeSequenceTofile(ArrayList<TMTC> sequence, String path, String filename) throws IOException, ClassNotFoundException {
+    public static void writeSequenceTofile(ArrayList sequence, String path, String filename) throws IOException, ClassNotFoundException {
 
        // File folder = new File(path);
         //folder.mkdirs();

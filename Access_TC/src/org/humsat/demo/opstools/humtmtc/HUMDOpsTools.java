@@ -29,8 +29,11 @@ import com.xatcobeo.gssw.tmtc.services.OBOpsProcedureService.TC.TCChangeToCommun
 import com.xatcobeo.gssw.tmtc.services.OBOpsSchedulingService.TC.TCAddTelecommandAbsoluteTime;
 
 
+
+
 //import experiments.ExperimentFactory;
 import org.humsat.demo.gssw.opstools.tcsequences.ExperimentFactory;
+import org.humsat.demo.gssw.opstools.tcwrappers.SCTelecommandWrapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -123,31 +126,50 @@ public class HUMDOpsTools {
 	public static void ExperimentsCreator(String ExperimentsPath, String TCList_path, String Output_file_name) throws Exception{
 		
 		ArrayList<Experiments> experimentslist = new ArrayList<Experiments>();
-		//ArrayList<ArrayList> TC_List = new ArrayList<ArrayList>();
 		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS", Locale.ENGLISH);
+		File f_csv= new File(TCList_path+Output_file_name);
+		FileWriter fw = new FileWriter(f_csv);
+	
+		
 		int it=0;
 		
-		experimentslist=CSVReader.getExperimentsInfo(ExperimentsPath);
+		experimentslist=CSVReader.getExperimentsInfo(ExperimentsPath); //get a Experiments List from the CSV file.
 		ExperimentFactory ef = new ExperimentFactory();
 		
+		
+		//We go over all the experiments and fill a TC List with their TMTC associated
 		for (it=0;it<experimentslist.size();it++){
 			//Get parameters for each experiment
 			String ID=experimentslist.get(it).getID();
 			Date dt = experimentslist.get(it).getStartTime();
 			String Name = experimentslist.get(it).getName();
 			String config = experimentslist.get(it).getConfiguration();
-			//get TC List for each experiment
+			//CreateTC List for each experiment
 			TC_List.addAll(ef.getExperiment(ID, dt, Name, config));
+			
+			
+			//Get each TC from this experiment to build a CSV file with its information
+			TMTC tc = ef.getExperiment(ID, dt, Name, config).get(it);
+			SCTelecommandWrapper sctw = new SCTelecommandWrapper(tc);
+			String st_mn=sctw.getTaskMnemonic();
+			Date dtexp =sctw.getTaskDate();			
+			String paramexp=sctw.getTaskParams();
+			//				
+			fw.write(System.getProperty("line.separator"));
+			fw.write(st_mn+","+sdf.format(dtexp)+","+paramexp);	 			
 		}
+		fw.close();
+	
 		//Write TC List in a file
 		writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));		
 		writeSequenceTXT(TC_List, TCList_path, (Output_file_name+".txt"),"Experiments",0,0,0,0);
 					
 	}
 	
-		
 	
-	
+
 	public static TMTC createSchCommPassTC(CommunicationPass passObject) throws UnknownTCCodeException, UnknownException, ParseException {
         
         // Start time of the COMMS task
@@ -290,6 +312,7 @@ public class HUMDOpsTools {
 
     }
     
+    
     /**
      * Reads a serialized sequence of telecommands from a file.
      * @param path, path to the sequence file.
@@ -310,6 +333,7 @@ public class HUMDOpsTools {
 
         return (sequence);
     }
+    
     
     /**
      * Converts a Date value into a Timestamp and returns it.

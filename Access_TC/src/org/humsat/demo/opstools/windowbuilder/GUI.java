@@ -295,7 +295,7 @@ public class GUI {
 		//frmTclistCreator.getContentPane().add(lightningButton);
 		panel1.add(lightningButton);
 		
-		JLabel lblAccesTimeFile = new JLabel("Acces Time File");
+		JLabel lblAccesTimeFile = new JLabel("Access Time File");
 		lblAccesTimeFile.setBounds(258, 212, 89, 14);
 		lblAccesTimeFile.setIcon(null);
 		//frmTclistCreator.getContentPane().add(lblAccesTimeFile);
@@ -337,7 +337,7 @@ public class GUI {
 		panel1.add(case4checkbox);
 		
 		JLabel imageLabel = new JLabel("New label");
-		imageLabel.setBounds(10, 125, 238, 101);
+		imageLabel.setBounds(10, 125, 238, 113);
 		//frmTclistCreator.getContentPane().add(imageLabel);
 		panel1.add(imageLabel);
 		

@@ -129,38 +129,41 @@ public class HUMDOpsTools {
 		ArrayList<TMTC> TC_List = new ArrayList<TMTC>();
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS", Locale.ENGLISH);
-		File f_csv= new File(TCList_path+Output_file_name);
+		File f_csv= new File(TCList_path+Output_file_name+".csv");
 		FileWriter fw = new FileWriter(f_csv);
-	
-		
-		int it=0;
 		
 		experimentslist=CSVReader.getExperimentsInfo(ExperimentsPath); //get a Experiments List from the CSV file.
 		ExperimentFactory ef = new ExperimentFactory();
 		
 		
 		//We go over all the experiments and fill a TC List with their TMTC associated
-		for (it=0;it<experimentslist.size();it++){
+		for (int it=0;it<experimentslist.size();it++){
 			//Get parameters for each experiment
 			String ID=experimentslist.get(it).getID();
 			Date dt = experimentslist.get(it).getStartTime();
 			String Name = experimentslist.get(it).getName();
 			String config = experimentslist.get(it).getConfiguration();
-			//CreateTC List for each experiment
-			TC_List.addAll(ef.getExperiment(ID, dt, Name, config));
-			
-			
+			//Create TC_List for each experiment
+            ArrayList<TMTC> sequence = ef.getExperiment(ID, dt, Name, config);
+			TC_List.addAll(sequence);
+						
 			//Get each TC from this experiment to build a CSV file with its information
-			TMTC tc = ef.getExperiment(ID, dt, Name, config).get(it);
-			SCTelecommandWrapper sctw = new SCTelecommandWrapper(tc);
-			String st_mn=sctw.getTaskMnemonic();
-			Date dtexp =sctw.getTaskDate();			
-			String paramexp=sctw.getTaskParams();
-			//				
-			fw.write(System.getProperty("line.separator"));
-			fw.write(st_mn+","+sdf.format(dtexp)+","+paramexp);	 			
+            for (TMTC tc : sequence){
+            	SCTelecommandWrapper sctw = new SCTelecommandWrapper(tc);
+                String st_mn=sctw.getTaskMnemonic();
+                //Date dtexp =sctw.getTaskDate();			
+                long ts = sctw.getTaskTimestamp();
+                String paramexp=sctw.getTaskParams();
+					
+                fw.write(System.getProperty("line.separator"));
+                //fw.write(st_mn+","+sdf.format(dtexp)+","+paramexp);
+                fw.write(ts+","+st_mn+","+paramexp);
+                            
+             }			 			
 		}
-		fw.close();
+		
+                
+                fw.close();
 	
 		//Write TC List in a file
 		writeSequenceTofile(TC_List,TCList_path,(Output_file_name+".ser"));		
@@ -180,7 +183,7 @@ public class HUMDOpsTools {
         long epoch=0;
         long offset=0;
         
-        
+ 
         // end of TODO        
        
         //Obtain groundTime and epoch since UNIX in ms

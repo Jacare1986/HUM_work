@@ -62,7 +62,92 @@ public class CSVReader {
 		return passes_list;
 	}
 	
-	public static void PassesType(ArrayList<CommunicationPass> pases, String path) throws IOException, ParseException {
+//Old way to classify passes	
+	
+//	public static void PassesType(ArrayList<CommunicationPass> pases, String path) throws IOException, ParseException {
+//		
+//		/**
+//		 * We compare passes with lightning times
+//		 * Then we assign to each pass a case type depending on lightning times
+//		 */
+//		
+//		String line;
+//		String[] fields;
+//		SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
+//		Date light_start,light_stop;
+//		int it=0;
+//			
+//			FileReader f= new FileReader(path);
+//			BufferedReader br = new BufferedReader(f);
+//			//We read the first line which only contains format information
+//			br.readLine();
+//			
+//			while(((line=br.readLine())!=null)&(it<pases.size())){
+//	
+//				if(line.length()>=4){
+//					
+//					fields=line.split(",");
+//			
+//					light_start=sdf.parse(fields[0]);
+//					light_stop=sdf.parse(fields[1]);
+//					
+//					//Read Pass Start & Pass Stop
+//					Date pass_start = (pases.get(it)).getStartTime();
+//					//System.out.println(pass_start);
+//					Date pass_stop = (pases.get(it)).getStopTime();
+//					
+//					/**
+//					 * we check in which case we are
+//					 */
+//					
+//					if(pass_start.after(light_start)==true){
+//						if(pass_start.before(light_stop)==true){
+//							//Start_Time with light
+//							if(pass_stop.before(light_stop)==true){
+//								//pass within light --> case 1
+//								(pases.get(it)).setCaseType(1);
+//								//Light Duration during pass
+//								long light_pass_duration=(pases.get(it).getDuration());
+//								(pases.get(it)).setPassLightDuration(light_pass_duration);
+//								//update new pass to compare
+//								it++;		
+//							}else{
+//								//part of the pass is within light and the other in eclipse
+//								//--> case 3
+//								(pases.get(it)).setCaseType(3);
+//								//Light Duration during pass
+//								long light_pass_duration=((light_stop.getTime())-(pass_start.getTime()))/1000; //getTime() returns time since UNIX in ms so we divide by 1000 to obtain in sec.
+//								(pases.get(it)).setPassLightDuration(light_pass_duration);
+//								//update new pass to compare
+//								it++;
+//							}
+//						}else{
+//							//do nothing, compare same pass with next lightning time
+//						}
+//					}else{
+//						//pass_start in eclipse
+//						if(pass_stop.before(light_start)==true){
+//							//Eclipse pass --> case 2
+//							(pases.get(it)).setCaseType(2);
+//							(pases.get(it)).setPassLightDuration(0);
+//							it++;
+//						}else if(pass_stop.before(light_stop)==true){
+//							//Pas start in eclipse and end with light
+//							(pases.get(it)).setCaseType(4);
+//							long light_pass_duration=((pass_stop.getTime())-(light_start.getTime()))/1000;
+//							(pases.get(it)).setPassLightDuration(light_pass_duration);
+//							it++;
+//						}
+//					}
+//				}
+//			}
+//			br.close();
+//		
+//	}
+
+	
+	
+public static void PassesType(ArrayList<CommunicationPass> pases, String path) throws IOException, ParseException {
 		
 		/**
 		 * We compare passes with lightning times
@@ -74,6 +159,7 @@ public class CSVReader {
 		SimpleDateFormat sdf  = new SimpleDateFormat("dd MMM yyyy HH:mm:ss.SSS",Locale.ENGLISH);
 		Date light_start,light_stop;
 		int it=0;
+		boolean next_line = false;
 			
 			FileReader f= new FileReader(path);
 			BufferedReader br = new BufferedReader(f);
@@ -81,63 +167,71 @@ public class CSVReader {
 			br.readLine();
 			
 			while(((line=br.readLine())!=null)&(it<pases.size())){
-	
-				if(line.length()>=4){
+				
+				next_line = false;
+				
+				while (next_line == false){
 					
-					fields=line.split(",");
-			
-					light_start=sdf.parse(fields[0]);
-					light_stop=sdf.parse(fields[1]);
-					
-					//Read Pass Start & Pass Stop
-					Date pass_start = (pases.get(it)).getStartTime();
-					//System.out.println(pass_start);
-					Date pass_stop = (pases.get(it)).getStopTime();
-					
-					/**
-					 * we check in which case we are
-					 */
-					
-					if(pass_start.after(light_start)==true){
-						if(pass_start.before(light_stop)==true){
-							//Start_Time with light
-							if(pass_stop.before(light_stop)==true){
-								//pass within light --> case 1
-								(pases.get(it)).setCaseType(1);
-								//Light Duration during pass
-								long light_pass_duration=(pases.get(it).getDuration());
-								(pases.get(it)).setPassLightDuration(light_pass_duration);
-								//update new pass to compare
-								it++;		
+					if(line.length()>=4){
+						
+						fields=line.split(",");
+				
+						light_start=sdf.parse(fields[0]);
+						light_stop=sdf.parse(fields[1]);
+						
+						//Read Pass Start & Pass Stop
+						Date pass_start = (pases.get(it)).getStartTime();
+						//System.out.println(pass_start);
+						Date pass_stop = (pases.get(it)).getStopTime();
+						
+						/**
+						 * we check in which case we are
+						 */
+						
+						if(pass_start.after(light_start)==true){
+							if(pass_start.before(light_stop)==true){
+								//Start_Time with light
+								if(pass_stop.before(light_stop)==true){
+									//pass within light --> case 1
+									(pases.get(it)).setCaseType(1);
+									//Light Duration during pass
+									long light_pass_duration=(pases.get(it).getDuration());
+									(pases.get(it)).setPassLightDuration(light_pass_duration);
+									//update new pass to compare
+									it++;		
+								}else{
+									//part of the pass is within light and the other in eclipse
+									//--> case 3
+									(pases.get(it)).setCaseType(3);
+									//Light Duration during pass
+									long light_pass_duration=((light_stop.getTime())-(pass_start.getTime()))/1000; //getTime() returns time since UNIX in ms so we divide by 1000 to obtain in sec.
+									(pases.get(it)).setPassLightDuration(light_pass_duration);
+									//update new pass to compare
+									it++;
+								}
 							}else{
-								//part of the pass is within light and the other in eclipse
-								//--> case 3
-								(pases.get(it)).setCaseType(3);
-								//Light Duration during pass
-								long light_pass_duration=((light_stop.getTime())-(pass_start.getTime()))/1000; //getTime() returns time since UNIX in ms so we divide by 1000 to obtain in sec.
-								(pases.get(it)).setPassLightDuration(light_pass_duration);
-								//update new pass to compare
-								it++;
+								//do nothing, compare same pass with next lightning time
+								next_line = true;
 							}
 						}else{
-							//do nothing, compare same pass with next lightning time
-						}
-					}else{
-						//pass_start in eclipse
-						if(pass_stop.before(light_start)==true){
-							//Eclipse pass --> case 2
-							(pases.get(it)).setCaseType(2);
-							(pases.get(it)).setPassLightDuration(0);
-							it++;
-						}else if(pass_stop.before(light_stop)==true){
-							//Pas start in eclipse and end with light
-							(pases.get(it)).setCaseType(4);
-							long light_pass_duration=((pass_stop.getTime())-(light_start.getTime()))/1000;
-							(pases.get(it)).setPassLightDuration(light_pass_duration);
-							it++;
+							//pass_start in eclipse
+							if(pass_stop.before(light_start)==true){
+								//Eclipse pass --> case 2
+								(pases.get(it)).setCaseType(2);
+								(pases.get(it)).setPassLightDuration(0);
+								it++;
+							}else if(pass_stop.before(light_stop)==true){
+								//Pas start in eclipse and end with light
+								(pases.get(it)).setCaseType(4);
+								long light_pass_duration=((pass_stop.getTime())-(light_start.getTime()))/1000;
+								(pases.get(it)).setPassLightDuration(light_pass_duration);
+								it++;
+							}
 						}
 					}
+					if (it>=7) next_line=true;
 				}
+	
 			}
 			br.close();
 		
